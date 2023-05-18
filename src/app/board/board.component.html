@@ -1,0 +1,62 @@
+<div class="sidebar">
+    <table>
+        <thead>
+            <th>Characters</th>
+            <th>Symbols</th>
+            <th>Speech Bubles</th>
+            <th> Backgrounds</th>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>
+                    <img *ngFor="let image of characterImages" [src]="image.imageLink"
+                        style="width: 130px; height: 130px; object-fit: cover;"
+                        (dragstart)="onDragStart($event, image.imageLink)">
+                </td>
+
+                <td>
+                    <img *ngFor="let image of symbolImages" [src]="image.imageLink"
+                        style="width: 130px; height: 130px; object-fit: cover;"
+                        (dragstart)="onDragStart($event, image.imageLink)">
+                </td>
+
+                <td>
+                    <img *ngFor="let image of bubbleImages" [src]="image.imageLink"
+                        style="width: 130px; height: 130px; object-fit: cover;"
+                        (dragstart)="onDragStart($event, image.imageLink)">
+                </td>
+
+                <td>
+                    <img *ngFor="let image of backgroundImages" [src]="image.imageLink"
+                        style="width: 130px; height: 130px; object-fit: cover;"
+                        (dragstart)="onDragStart($event, image.imageLink)">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button routerLink="upload"> Upload Image</button>
+
+</div>
+
+<div class="storyboard-breadcrumbs">
+  <button *ngFor="let container of containers; let i = index" (click)="activateContainer(i)">
+    {{ i + 1 }}
+  </button>
+  <button (click)="addContainer()"> + </button>
+</div>
+
+<div *ngFor="let container of containers; let containerIndex = index">
+  <ng-container *ngIf="container.active">
+    <div [id]="container.id" class="container" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+      <img *ngFor="let image of container.images; let i = index;" [id]="'image' + containerIndex + '_' + i" [src]="image" cdkDrag
+      cdkDragBoundary=".container" (cdkDragEnded)="onDragEnded($event, i)"
+      style="position: relative; width: 130px; height: 130px;">
+    </div>
+  </ng-container>
+</div>
+
+<div>
+    <button (click)="onLoadPosition()">Load Storyboard</button>
+</div>

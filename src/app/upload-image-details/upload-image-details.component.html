@@ -1,0 +1,32 @@
+<form [formGroup]="imageForm" (ngSubmit)="uploadFiles(upload)">
+    <div class="row-cols-6">
+        <label>Image Name</label>
+        <input type="text" formControlName="imageName">
+    </div>
+
+    <div class="row-cols-6">
+        <label>Image Tag</label>
+        <br>
+        <div class="form-check">
+            <input type="radio" formControlName="imageName" value="character" class="form-check-input">
+            
+            <label class="form-check-label">Character</label>
+            <input type="radio" formControlName="imageTag" value="background">
+            <label>Background</label>
+            <input type="radio" formControlName="imageTag" value="symbol">
+            <label>Symbol</label>
+            <input type="radio" formControlName="imageTag" value="speech-bubble">
+            <label>Speech Bubble</label>
+        </div>
+    </div>
+
+    <label class="col-1 col-form-label">Project Images</label>
+
+    <label for="fileUpload">Choose a File</label>
+    <input id="fileUpload" type="file" #upload />
+
+
+    <button>Save Project</button>
+
+
+</form>

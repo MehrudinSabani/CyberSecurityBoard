@@ -1,0 +1,66 @@
+.container {
+    position: relative;
+    width: 900px;
+    height: 750px;
+    border: 1px solid black;
+    margin-right: 10px;
+    display: inline-block;
+  }
+
+  
+  .image {
+    position: absolute;
+    width: 60px;
+    object-fit: cover;
+    user-select: none;
+  }
+  
+
+
+  .sidebar {
+    display: inline-block;
+    width: 120px;
+    vertical-align: top;
+  }
+ 
+  /*  */
+
+  p {
+    font-family: Lato;
+  }
+  
+  .main {
+    margin: 8px;
+  }
+
+
+  .drag-area {
+    width: 700px;
+    height: 500px;
+    border: 1px solid black;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .image {
+    width: 150px;
+    height: 150px;
+    margin: 10px;
+    border: 1px solid gray;
+    cursor: move;
+  }
+  
+  .image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+
+img{
+  width: 60px;
+}
+
+thead{
+  text-align: center;
+}
