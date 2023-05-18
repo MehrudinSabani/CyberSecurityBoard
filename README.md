@@ -1,6 +1,6 @@
 # CyberSecurityBoard
 
-CyberSecurity board is a modeling tool that allows users to create educative storyboards in the field of cybersecurity
+CyberSecurityBoard is a modeling tool that allows users to create educative storyboards in the field of cybersecurity
 =======
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.1.
