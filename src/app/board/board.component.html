@@ -50,7 +50,7 @@
 <div *ngFor="let container of containers; let containerIndex = index">
   <ng-container *ngIf="container.active">
     <div [id]="container.id" class="container" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
-      <img *ngFor="let image of container.images; let i = index;" [id]="'image' + containerIndex + '_' + i" [src]="image" cdkDrag
+      <img *ngFor="let image of container.images | keyvalue; let i = index;" [id]="'image' + containerIndex + '_' + image.key" [src]="image.value" cdkDrag
       cdkDragBoundary=".container" (cdkDragEnded)="onDragEnded($event, i)"
       style="position: relative; width: 130px; height: 130px;">
     </div>
