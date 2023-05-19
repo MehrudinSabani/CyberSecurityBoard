@@ -22,6 +22,7 @@ import { BoardComponent } from './board/board.component';
 import { UploadImageDetailsComponent } from './upload-image-details/upload-image-details.component';
 import { RouterModule, Routes } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SidebarComponent } from './board/sidebar/sidebar.component';
 
 
 const routes: Routes = [
@@ -37,7 +38,8 @@ const routes: Routes = [
   declarations: [
     AppComponent,
     BoardComponent,
-    UploadImageDetailsComponent
+    UploadImageDetailsComponent,
+    SidebarComponent
   ],
   imports: [
     BrowserModule,

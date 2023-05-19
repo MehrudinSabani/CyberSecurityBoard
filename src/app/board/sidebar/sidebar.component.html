@@ -1,0 +1,41 @@
+<div class="sidebar">
+    <table>
+        <thead>
+            <th>Characters</th>
+            <th>Symbols</th>
+            <th>Speech Bubles</th>
+            <th> Backgrounds</th>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>
+                    <img *ngFor="let image of characterImages" [src]="image.imageLink"
+                        style="width: 130px; height: 130px; object-fit: cover;"
+                        (dragstart)="onDragStart($event, image.imageLink)">
+                </td>
+
+                <td>
+                    <img *ngFor="let image of symbolImages" [src]="image.imageLink"
+                        style="width: 130px; height: 130px; object-fit: cover;"
+                        (dragstart)="onDragStart($event, image.imageLink)">
+                </td>
+
+                <td>
+                    <img *ngFor="let image of bubbleImages" [src]="image.imageLink"
+                        style="width: 130px; height: 130px; object-fit: cover;"
+                        (dragstart)="onDragStart($event, image.imageLink)">
+                </td>
+
+                <td>
+                    <img *ngFor="let image of backgroundImages" [src]="image.imageLink"
+                        style="width: 130px; height: 130px; object-fit: cover;"
+                        (dragstart)="onDragStart($event, image.imageLink)">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button routerLink="upload"> Upload Image</button>
+
+</div>

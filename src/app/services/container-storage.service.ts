@@ -8,6 +8,8 @@ import { Container } from '../interfaces/container';
 export class ContainerStorageService {
   constructor(private firestore: Firestore) {}
 
+  // todo: fix mapping to reduce the firestore complexity
+  
   async saveContainers(containers: Container[]) {
     // Convert images and imagePositions objects to arrays of objects with keys
     const containersForFirestore = containers.map((container) => {

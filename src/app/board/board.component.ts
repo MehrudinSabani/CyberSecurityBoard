@@ -1,12 +1,7 @@
 import { CdkDragEnd } from '@angular/cdk/drag-drop';
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { DataStorageService } from '../services/data-storage.service';
-import { ImageDetail } from '../interfaces/image-detail';
 import { ContainerStorageService } from '../services/container-storage.service';
 import { Container } from '../interfaces/container';
-
-
-
 
 @Component({
   selector: 'app-board',
@@ -15,12 +10,6 @@ import { Container } from '../interfaces/container';
 })
 export class BoardComponent {
 
-  images = [
-    'assets/male.png',
-    'assets/female.png',
-    'assets/bubble.png'
-
-  ];
   imagePositions: { x: number; y: number; }[] = [];
   
   @ViewChild('container')
@@ -30,23 +19,19 @@ containers: Container[] = [
   {
     id: 'container0',
     active: true,
-    images: { '0': 'assets/male.png', '1': 'assets/female.png', '2': 'assets/bubble.png' },
+    images: '',
     imagePositions: {},
   },
 ];
 
+draggedImage: string | null = null;
+draggedImagePosition: { x: number; y: number } | null = null;
 
-  draggedImage: string | null = null;
-  draggedImagePosition: { x: number; y: number } | null = null;
+handleDragStartEvent(eventData: { event: DragEvent; image: string }) {
+  this.draggedImage = eventData.image;
+  this.draggedImagePosition = { x: eventData.event.clientX, y: eventData.event.clientY };}
 
-
-  characterImages: ImageDetail[] = [];
-  symbolImages: ImageDetail[] = [];
-  bubbleImages: ImageDetail[] = [];
-  backgroundImages: ImageDetail[] = [];
-
-
-  constructor(private dataStorageService: DataStorageService, private containerStorageService: ContainerStorageService){}
+  constructor( private containerStorageService: ContainerStorageService){}
 
   async ngOnInit() {
 
@@ -58,7 +43,6 @@ containers: Container[] = [
       await this.containerStorageService.saveContainers(this.containers);
     }
     this.onLoadPosition();
-    this.onFetchImages();
   }
   
   async addContainer() {
@@ -73,21 +57,12 @@ containers: Container[] = [
       imagePositions: [],
     });
     await this.containerStorageService.saveContainers(this.containers); // Save containers to Firestore
-
   }
   
   async activateContainer(index: number) {
     this.containers.forEach((container, i) => {
       container.active = i === index;
     });
-    // await this.containerStorageService.saveContainers(this.containers); // Save containers to Firestore
-  }
-
-  async onFetchImages(){
-    this.characterImages = await this.dataStorageService.fetchImagesByTag('character');
-    this.symbolImages = await this.dataStorageService.fetchImagesByTag('symbol');
-    this.bubbleImages = await this.dataStorageService.fetchImagesByTag('speech-bubble');
-    this.backgroundImages = await this.dataStorageService.fetchImagesByTag('background');
   }
 
   // thanks to this function we gather information about the image we are currently dragging
@@ -99,7 +74,7 @@ containers: Container[] = [
   onDragOver(event: DragEvent) {
     event.preventDefault();
   }
-  
+
   // updated for multiple containers
   async onDrop(event: DragEvent) {
     event.preventDefault();
@@ -119,7 +94,6 @@ containers: Container[] = [
           if (!activeContainer.imagePositions) {
             activeContainer.imagePositions = {};
           }
-  
           const newIndex = Object.keys(activeContainer.images).length.toString();
           activeContainer.images[newIndex] = url;
           activeContainer.imagePositions[newIndex] = { x, y };
