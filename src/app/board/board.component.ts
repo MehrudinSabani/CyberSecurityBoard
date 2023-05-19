@@ -2,6 +2,8 @@ import { CdkDragEnd } from '@angular/cdk/drag-drop';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { DataStorageService } from '../services/data-storage.service';
 import { ImageDetail } from '../interfaces/image-detail';
+import { ContainerStorageService } from '../services/container-storage.service';
+
 
 @Component({
   selector: 'app-board',
@@ -17,9 +19,15 @@ export class BoardComponent {
 
   ];
   imagePositions: { x: number; y: number; }[] = [];
+  
+  @ViewChild('container')
+  container!: ElementRef;
 
   containers: any[] = [{ id: 'container0', active: true, images: this.images, imagePositions: this.imagePositions }];
 
+
+  draggedImage: string | null = null;
+  draggedImagePosition: { x: number; y: number } | null = null;
 
 
   characterImages: ImageDetail[] = [];
@@ -28,58 +36,41 @@ export class BoardComponent {
   backgroundImages: ImageDetail[] = [];
 
 
+  constructor(private dataStorageService: DataStorageService, private containerStorageService: ContainerStorageService){}
 
-  
+  async ngOnInit() {
 
-
-
-  draggedImage: string | null = null;
-  draggedImagePosition: { x: number; y: number } | null = null;
-
-
-  xPos:any = [];
-  yPos:any = [];
-
-  savedX:any = [] ;
-  savedY:any = [];
-
-
-  @ViewChild('container')
-  container!: ElementRef;
-
-
-  constructor(private dataStorageService: DataStorageService){}
-
-  ngOnInit() {
-    const savedContainers = localStorage.getItem('containers');
-    if (savedContainers) {
-      this.containers = JSON.parse(savedContainers);
+    // const savedContainers = localStorage.getItem('containers');
+    const containers = await this.containerStorageService.getContainers()
+    if (containers) {
+      this.containers = containers;
     } else {
-      localStorage.setItem('containers', JSON.stringify(this.containers));
+      await this.containerStorageService.saveContainers(this.containers);
     }
     this.onLoadPosition();
     this.onFetchImages();
   }
   
-  
-  addContainer() {
+  async addContainer() {
     this.containers.forEach((container) => {
       container.active = false;
     });
+    // setting the newly added container to the active one
     this.containers.push({
       id: `container${this.containers.length}`,
       active: true,
       images: [],
       imagePositions: [],
     });
-    localStorage.setItem('containers', JSON.stringify(this.containers));
+    await this.containerStorageService.saveContainers(this.containers); // Save containers to Firestore
+
   }
   
-  activateContainer(index: number) {
+  async activateContainer(index: number) {
     this.containers.forEach((container, i) => {
       container.active = i === index;
     });
-    localStorage.setItem('containers', JSON.stringify(this.containers));
+    // await this.containerStorageService.saveContainers(this.containers); // Save containers to Firestore
   }
 
   async onFetchImages(){
@@ -89,8 +80,7 @@ export class BoardComponent {
     this.backgroundImages = await this.dataStorageService.fetchImagesByTag('background');
   }
 
-
-  
+  // thanks to this function we gather information about the image we are currently dragging
   onDragStart(event: DragEvent, image: string) {
     this.draggedImage = image;
     this.draggedImagePosition = { x: event.clientX, y: event.clientY };
@@ -101,7 +91,7 @@ export class BoardComponent {
   }
   
   // updated for multiple containers
-onDrop(event: DragEvent) {
+async onDrop(event: DragEvent) {
   event.preventDefault();
   const url = this.draggedImage;
   if (url) {
@@ -111,18 +101,24 @@ onDrop(event: DragEvent) {
       if (containerElement) {
         const x = event.clientX - containerElement.offsetLeft - 50;
         const y = event.clientY - containerElement.offsetTop - 50;
+        
+        // Initialize activeContainer.images as an array if it's undefined
+        if (!activeContainer.images) {
+          activeContainer.images = [];
+        }
+
         activeContainer.images.push(url);
         activeContainer.imagePositions.push({ x, y });
         this.draggedImage = null;
         this.draggedImagePosition = null;
-        localStorage.setItem('containers', JSON.stringify(this.containers));
+        await this.containerStorageService.saveContainers(this.containers); // Save containers to Firestore
       }
     }
   }
 }
-  
 
-  onDragEnded(event: CdkDragEnd, index: number) {
+
+ async onDragEnded(event: CdkDragEnd, index: number) {
     let target = event.source.getRootElement();
     let boundingClientRect = target.getBoundingClientRect();
     let container = target.parentElement;
@@ -132,35 +128,38 @@ onDrop(event: DragEvent) {
     const activeContainer = this.containers.find(c => c.active);
     if (activeContainer) {
       activeContainer.imagePositions[index] = { x, y };
-      this.savePosition();
+      await this.savePosition();
     }
   }
 
   onLoadPosition() {
     this.containers.forEach((container, containerIndex) => {
-      container.images.forEach((_: any, i: string | number) => {
-        const element = document.querySelector(`#image${containerIndex}_${i}`) as HTMLElement;
-        if (element) {
-          const boundingClientRect = element.getBoundingClientRect();
-          const containerElement = document.querySelector(`#${container.id}`);
-          if (!containerElement) {
-            console.error('Container element not found');
-            return;
+      if (container.imagePositions) { // Check if container.imagePositions is defined
+        Object.keys(container.imagePositions).forEach((imageId) => {
+          const element = document.querySelector(`#image${containerIndex}_${imageId}`) as HTMLElement;
+          if (element) {
+            const boundingClientRect = element.getBoundingClientRect();
+            const containerElement = document.querySelector(`#${container.id}`);
+            if (!containerElement) {
+              console.error('Container element not found');
+              return;
+            }
+            const parentPosition = this.getPosition(containerElement);
+            const savedX = container.imagePositions[imageId].x;
+            const savedY = container.imagePositions[imageId].y;
+            element.style.left = (savedX - boundingClientRect.x + parentPosition.left) + 'px';
+            element.style.top = (savedY - boundingClientRect.y + parentPosition.top) + 'px';
+            container.imagePositions[imageId] = { x: savedX, y: savedY };
           }
-          const parentPosition = this.getPosition(containerElement);
-          const savedX = container.imagePositions[i].x;
-          const savedY = container.imagePositions[i].y;
-          element.style.left = (savedX - boundingClientRect.x + parentPosition.left) + 'px';
-          element.style.top = (savedY - boundingClientRect.y + parentPosition.top) + 'px';
-          container.imagePositions[i] = { x: savedX, y: savedY };
-        }
-      });
+        });
+      }
     });
   }
+  
+  
 
-
-  savePosition() {
-    localStorage.setItem('containers', JSON.stringify(this.containers));
+  async savePosition() {
+    await this.containerStorageService.saveContainers(this.containers); // Save containers to Firestore
   }
   
     getPosition(el: Element | null) {
