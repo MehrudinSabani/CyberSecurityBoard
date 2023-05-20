@@ -8,7 +8,7 @@ import { DataStorageService } from 'src/app/services/data-storage.service';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
-  constructor(private dataStorageService: DataStorageService){}
+  constructor(private dataStorageService: DataStorageService) { }
 
   ngOnInit() {
     this.onFetchImages();
@@ -30,9 +30,9 @@ export class SidebarComponent {
     this.draggedImagePosition = { x: event.clientX, y: event.clientY };
     this.onDragStartEvent.emit({ event, image });
   }
-  
 
-  async onFetchImages(){
+
+  async onFetchImages() {
     this.characterImages = await this.dataStorageService.fetchImagesByTag('character');
     this.symbolImages = await this.dataStorageService.fetchImagesByTag('symbol');
     this.bubbleImages = await this.dataStorageService.fetchImagesByTag('speech-bubble');

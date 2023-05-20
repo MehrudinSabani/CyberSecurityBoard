@@ -1,7 +1,4 @@
-
-.sidebar {
-    display: inline-block;
-    width: 120px;
-    vertical-align: top;
-  }
- 
+.sidebarImage{
+    width: 70px; 
+    object-fit: cover;
+}

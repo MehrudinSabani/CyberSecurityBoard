@@ -1,4 +1,4 @@
-<div class="sidebar">
+<div>
     <table>
         <thead>
             <th>Characters</th>
@@ -10,26 +10,22 @@
         <tbody>
             <tr>
                 <td>
-                    <img *ngFor="let image of characterImages" [src]="image.imageLink"
-                        style="width: 130px; height: 130px; object-fit: cover;"
+                    <img class="sidebarImage" *ngFor="let image of characterImages" [src]="image.imageLink"
                         (dragstart)="onDragStart($event, image.imageLink)">
                 </td>
 
                 <td>
-                    <img *ngFor="let image of symbolImages" [src]="image.imageLink"
-                        style="width: 130px; height: 130px; object-fit: cover;"
+                    <img class="sidebarImage" *ngFor="let image of symbolImages" [src]="image.imageLink"
                         (dragstart)="onDragStart($event, image.imageLink)">
                 </td>
 
                 <td>
-                    <img *ngFor="let image of bubbleImages" [src]="image.imageLink"
-                        style="width: 130px; height: 130px; object-fit: cover;"
+                    <img class="sidebarImage" *ngFor="let image of bubbleImages" [src]="image.imageLink"
                         (dragstart)="onDragStart($event, image.imageLink)">
                 </td>
 
                 <td>
-                    <img *ngFor="let image of backgroundImages" [src]="image.imageLink"
-                        style="width: 130px; height: 130px; object-fit: cover;"
+                    <img class="sidebarImage" *ngFor="let image of backgroundImages" [src]="image.imageLink"
                         (dragstart)="onDragStart($event, image.imageLink)">
                 </td>
             </tr>

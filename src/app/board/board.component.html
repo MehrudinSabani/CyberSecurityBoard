@@ -1,27 +1,22 @@
-<app-sidebar
-[draggedImage]="draggedImage"
-[draggedImagePosition]="draggedImagePosition"
-(onDragStartEvent)="handleDragStartEvent($event)">
-
-</app-sidebar>
-
-<div class="storyboard-breadcrumbs">
-  <button *ngFor="let container of containers; let i = index" (click)="activateContainer(i)">
-    {{ i + 1 }}
-  </button>
-  <button (click)="addContainer()"> + </button>
-</div>
-
-<div *ngFor="let container of containers; let containerIndex = index">
-  <div *ngIf="container.active">
-    <div [id]="container.id" class="container" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
-      <img *ngFor="let image of container.images | keyvalue; let i = index;" [id]="'image' + containerIndex + '_' + image.key" [src]="image.value" cdkDrag
-      cdkDragBoundary=".container" (cdkDragEnded)="onDragEnded($event, i)"
-      style="position: relative; width: 130px; height: 130px;">
+<div class="storyBoard">
+  <div class="container-wrapper">
+    <div *ngFor="let container of containers; let containerIndex = index" [id]="container.id">
+      <div *ngIf="container.active">
+        <div [id]="container.id" class="container" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+          <img *ngFor="let image of container.images | keyvalue; let i = index;" [id]="'image' + containerIndex + '_' + image.key" [src]="image.value" cdkDrag cdkDragBoundary=".container" (cdkDragEnded)="onDragEnded($event, i)" style="position: absolute; width: 130px; height: 130px;">
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-<div>
-    <button (click)="onLoadPosition()">Load Storyboard</button>
+  <div class="storyboardNav">
+    <button *ngFor="let container of containers; let i = index" (click)="activateContainer(i)">
+      {{ i + 1 }}
+    </button>
+    <button (click)="addContainer()"> + </button>
+
+    <button (click)="updateImagePositions()">Load Storyboard</button>
+  </div>
+
+  <app-sidebar class="sidebar" [draggedImage]="draggedImage" [draggedImagePosition]="draggedImagePosition" (onDragStartEvent)="handleDragStartEvent($event)"></app-sidebar>
 </div>
