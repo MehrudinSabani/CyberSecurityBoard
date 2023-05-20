@@ -3,12 +3,10 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ContainerStorageService } from '../services/container-storage.service';
 import { Container } from '../interfaces/container';
 
-
 interface Position {
   x: number;
   y: number;
 }
-
 
 @Component({
   selector: 'app-board',
@@ -16,8 +14,7 @@ interface Position {
   styleUrls: ['./board.component.css']
 })
 
-export class BoardComponent  {
-
+export class BoardComponent {
 
   imagePositions: { x: number; y: number; }[] = [];
 
@@ -44,18 +41,15 @@ export class BoardComponent  {
   constructor(private containerStorageService: ContainerStorageService) { }
 
   async ngOnInit() {
+
     const containers = await this.containerStorageService.getContainers();
     if (containers) {
       this.containers = containers;
     } else {
       await this.containerStorageService.saveContainers(this.containers);
     }
-  }
-  
-  ngOnChanges() {
-    this.updateImagePositions();
-  }
 
+  }
 
   async addContainer() {
     this.containers.forEach((container) => {
@@ -99,7 +93,6 @@ export class BoardComponent  {
           const x = event.clientX - containerElement.offsetLeft - 50;
           const y = event.clientY - containerElement.offsetTop - 50;
 
-          // Initialize activeContainer.images and activeContainer.imagePositions as objects if undefined
           if (!activeContainer.images) {
             activeContainer.images = {};
           }
@@ -109,8 +102,6 @@ export class BoardComponent  {
           const newIndex = Object.keys(activeContainer.images).length.toString();
           activeContainer.images[newIndex] = url;
           activeContainer.imagePositions[newIndex] = { x, y };
-          this.draggedImage = null;
-          this.draggedImagePosition = null;
 
           // Check for undefined values before saving to Firestore
           if (Object.values(activeContainer.images).includes(undefined) || Object.values(activeContainer.imagePositions).includes(undefined)) {
@@ -137,24 +128,21 @@ export class BoardComponent  {
     }
   }
 
-  updateImagePositions() {
-    this.containers.forEach((container, containerIndex) => {
-      if (container.active) {
-        Object.entries(container.imagePositions).forEach(([index, position]) => {
-          const imageElement = document.getElementById(`image${containerIndex}_${index}`);
-          if (imageElement && typeof position === 'object' && position !== null) {
-            const pos = position as Position; // Cast the position object to the Position interface
-            imageElement.style.left = `${pos.x}px`;
-            imageElement.style.top = `${pos.y}px`;
-          }
-        });
-      }
-    });
-  }
+  // updateImagePositions() {
+  //   this.containers.forEach((container, containerIndex) => {
+  //     if (container.active) {
+  //       Object.entries(container.imagePositions).forEach(([index, position]) => {
+  //         const imageElement = document.getElementById(`image${containerIndex}_${index}`);
+  //         if (imageElement && typeof position === 'object' && position !== null) {
+  //           const pos = position as Position; // Cast the position object to the Position interface
+  //           imageElement.style.left = `${pos.x}px`;
+  //           imageElement.style.top = `${pos.y}px`;
+  //         }
+  //       });
+  //     }
+  //   });
+  // }
 
-  async savePosition() {
-    await this.containerStorageService.saveContainers(this.containers); // Save containers to Firestore
-  }
 
   getPosition(el: Element | null) {
     let x = 0;
@@ -165,5 +153,8 @@ export class BoardComponent  {
       el = (el as HTMLElement).offsetParent;
     }
     return { top: y, left: x };
+  }  
+  async savePosition() {
+    await this.containerStorageService.saveContainers(this.containers); // Save containers to Firestore
   }
 }

@@ -3,7 +3,12 @@
     <div *ngFor="let container of containers; let containerIndex = index" [id]="container.id">
       <div *ngIf="container.active">
         <div [id]="container.id" class="container" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
-          <img *ngFor="let image of container.images | keyvalue; let i = index;" [id]="'image' + containerIndex + '_' + image.key" [src]="image.value" cdkDrag cdkDragBoundary=".container" (cdkDragEnded)="onDragEnded($event, i)" style="position: absolute; width: 130px; height: 130px;">
+
+          <img *ngFor="let image of container.images | keyvalue;; let i = index;"
+            [id]="'image' + containerIndex + '_' + i" [src]="image.value" cdkDrag cdkDragBoundary=".container"
+            (cdkDragEnded)="onDragEnded($event, i)" style="position: absolute; width: 130px; height: 130px;"
+            [style.left.px]="container.imagePositions[i]?.x" [style.top.px]="container.imagePositions[i]?.y">
+
         </div>
       </div>
     </div>
@@ -15,8 +20,9 @@
     </button>
     <button (click)="addContainer()"> + </button>
 
-    <button (click)="updateImagePositions()">Load Storyboard</button>
+    <!-- <button (click)="updateImagePositions()">Load Storyboard</button> -->
   </div>
 
-  <app-sidebar class="sidebar" [draggedImage]="draggedImage" [draggedImagePosition]="draggedImagePosition" (onDragStartEvent)="handleDragStartEvent($event)"></app-sidebar>
+  <app-sidebar class="sidebar" [draggedImage]="draggedImage" [draggedImagePosition]="draggedImagePosition"
+    (onDragStartEvent)="handleDragStartEvent($event)"></app-sidebar>
 </div>
