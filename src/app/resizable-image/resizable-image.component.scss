@@ -1,0 +1,21 @@
+.box-container {
+  position: absolute;
+  width: 600px;
+  height: 450px;
+  outline: 1px solid black;
+  top: 40%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+
+  span:first-of-type {
+      position: absolute;
+      left: 50%;
+      transform: translate3d(-50%, -100%, 0);
+  }
+
+  span:nth-of-type(2) {
+      position: absolute;
+      top: 50%;
+      transform: translate3d(-100%, -50%, 0);
+  }
+}

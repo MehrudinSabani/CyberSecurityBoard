@@ -2,25 +2,28 @@
   <div class="container-wrapper">
     <div *ngFor="let container of containers; let containerIndex = index" [id]="container.id">
       <div *ngIf="container.active">
-        <div [id]="container.id" class="container" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+        <div [id]="container.id" class="container" (dragover)="onDragOver($event)" (drop)="onDrop($event)" >
+          <img *ngFor="let image of container.images | keyvalue; let i = index;"
 
-          <img *ngFor="let image of container.images | keyvalue;; let i = index;"
-            [id]="'image' + containerIndex + '_' + i" [src]="image.value" cdkDrag cdkDragBoundary=".container"
-            (cdkDragEnded)="onDragEnded($event, i)" style="position: absolute; width: 130px; height: 130px;"
-            [style.left.px]="container.imagePositions[i]?.x" [style.top.px]="container.imagePositions[i]?.y">
+            [id]="'image' + containerIndex + '_' + image.key" [src]="image.value" cdkDrag cdkDragBoundary=".container"
+            
+            (cdkDragEnded)="onDragEnded($event, i)" style="position: absolute; width: 130px; height: 130px;">
 
+            <div class="example-handle" cdkDragHandle>
+              <!-- <svg width="24px" fill="currentColor" viewBox="0 0 60 40"></svg> -->
+            </div>
         </div>
       </div>
     </div>
   </div>
 
   <div class="storyboardNav">
-    <button *ngFor="let container of containers; let i = index" (click)="activateContainer(i)">
+    <button *ngFor="let container of containers; let i = index" (click)="activateContainer(i)" (click)="updateImagePositions()">
       {{ i + 1 }}
     </button>
-    <button (click)="addContainer()"> + </button>
+    <button (click)="addContainer()" > + </button>
 
-    <!-- <button (click)="updateImagePositions()">Load Storyboard</button> -->
+    <button (click)="updateImagePositions()">Load Storyboard</button>
   </div>
 
   <app-sidebar class="sidebar" [draggedImage]="draggedImage" [draggedImagePosition]="draggedImagePosition"

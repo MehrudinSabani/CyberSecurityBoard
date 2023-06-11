@@ -1,5 +1,5 @@
 import { CdkDragEnd } from '@angular/cdk/drag-drop';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ContainerStorageService } from '../services/container-storage.service';
 import { Container } from '../interfaces/container';
 
@@ -14,7 +14,7 @@ interface Position {
   styleUrls: ['./board.component.css']
 })
 
-export class BoardComponent {
+export class BoardComponent implements OnInit{
 
   imagePositions: { x: number; y: number; }[] = [];
 
@@ -48,8 +48,8 @@ export class BoardComponent {
     } else {
       await this.containerStorageService.saveContainers(this.containers);
     }
-
   }
+
 
   async addContainer() {
     this.containers.forEach((container) => {
@@ -63,22 +63,26 @@ export class BoardComponent {
       imagePositions: [],
     });
     await this.containerStorageService.saveContainers(this.containers); // Save containers to Firestore
+    
   }
 
   async activateContainer(index: number) {
     this.containers.forEach((container, i) => {
       container.active = i === index;
     });
+    
   }
 
   // thanks to this function we gather information about the image we are currently dragging
   onDragStart(event: DragEvent, image: string) {
     this.draggedImage = image;
     this.draggedImagePosition = { x: event.clientX, y: event.clientY };
+    
   }
 
   onDragOver(event: DragEvent) {
     event.preventDefault();
+    
   }
 
   // updated for multiple containers
@@ -92,13 +96,6 @@ export class BoardComponent {
         if (containerElement) {
           const x = event.clientX - containerElement.offsetLeft - 50;
           const y = event.clientY - containerElement.offsetTop - 50;
-
-          if (!activeContainer.images) {
-            activeContainer.images = {};
-          }
-          if (!activeContainer.imagePositions) {
-            activeContainer.imagePositions = {};
-          }
           const newIndex = Object.keys(activeContainer.images).length.toString();
           activeContainer.images[newIndex] = url;
           activeContainer.imagePositions[newIndex] = { x, y };
@@ -114,35 +111,33 @@ export class BoardComponent {
     }
   }
 
+  // reduced complexity
   async onDragEnded(event: CdkDragEnd, index: number) {
-    let target = event.source.element.nativeElement;
-    let boundingClientRect = target.getBoundingClientRect();
-    let container = target.parentElement;
-    let parentPosition = this.getPosition(container);
-    const x = boundingClientRect.x - parentPosition.left;
-    const y = boundingClientRect.y - parentPosition.top;
+    const x = event.source._dragRef.getFreeDragPosition().x;
+    const y = event.source._dragRef.getFreeDragPosition().y;
     const activeContainer = this.containers.find(c => c.active);
     if (activeContainer) {
       activeContainer.imagePositions[index] = { x, y };
       await this.savePosition();
     }
+      // HINT - calling the updateImagePositions here will cause the weird non-precise spacing
+    // this.updateImagePositions();
   }
 
-  // updateImagePositions() {
-  //   this.containers.forEach((container, containerIndex) => {
-  //     if (container.active) {
-  //       Object.entries(container.imagePositions).forEach(([index, position]) => {
-  //         const imageElement = document.getElementById(`image${containerIndex}_${index}`);
-  //         if (imageElement && typeof position === 'object' && position !== null) {
-  //           const pos = position as Position; // Cast the position object to the Position interface
-  //           imageElement.style.left = `${pos.x}px`;
-  //           imageElement.style.top = `${pos.y}px`;
-  //         }
-  //       });
-  //     }
-  //   });
-  // }
-
+  updateImagePositions() {
+    this.containers.forEach((container, containerIndex) => {
+      if (container.active) {
+        Object.entries(container.imagePositions).forEach(([index, position]) => {
+          const imageElement = document.getElementById(`image${containerIndex}_${index}`);
+          if (imageElement && typeof position === 'object' && position !== null) {
+            const pos = position as Position; // Cast the position object to the Position interface
+            imageElement.style.left = `${pos.x}px`;
+            imageElement.style.top = `${pos.y}px`;
+          }
+        });
+      }
+    });
+  }
 
   getPosition(el: Element | null) {
     let x = 0;

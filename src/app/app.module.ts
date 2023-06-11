@@ -23,12 +23,17 @@ import { UploadImageDetailsComponent } from './upload-image-details/upload-image
 import { RouterModule, Routes } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SidebarComponent } from './board/sidebar/sidebar.component';
+import { ResizableImageComponent } from './resizable-image/resizable-image.component';
+import { ResizableDragableComponent } from './resizable-dragable/resizable-dragable.component';
 
 
 const routes: Routes = [
   { path: '', component: BoardComponent}, 
   { path: 'storyboard', component: BoardComponent},
   { path: 'upload', component: UploadImageDetailsComponent}, 
+  { path: 'resize', component: ResizableImageComponent}, 
+
+
  
 
 
@@ -39,7 +44,9 @@ const routes: Routes = [
     AppComponent,
     BoardComponent,
     UploadImageDetailsComponent,
-    SidebarComponent
+    SidebarComponent,
+    ResizableImageComponent,
+    ResizableDragableComponent
   ],
   imports: [
     BrowserModule,
