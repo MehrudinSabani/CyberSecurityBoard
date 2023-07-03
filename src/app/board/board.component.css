@@ -35,6 +35,30 @@
 }
 
 
+.image-position {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+}
+
+
+input {
+  border: 1px solid #000; /* Creates a border around the input field */
+  background-color: #fff; /* Sets the background color of the input field */
+  color: #000; /* Sets the text color */
+  padding: 5px; /* Adds some padding around the text */
+  width: 100px;
+  height: 50px;
+}
+
+input:focus {
+  border-color: #4d90fe; /* Changes the border color when the input field is focused */
+  width: 100px;
+  height: 50px;
+}
+
+
+
 
 
 /* use this as an alternative to set style directly from firebase data */

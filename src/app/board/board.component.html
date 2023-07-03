@@ -2,30 +2,38 @@
   <div class="container-wrapper">
     <div *ngFor="let container of containers; let containerIndex = index" [id]="container.id">
       <div *ngIf="container.active">
-        <div [id]="container.id" class="container" (dragover)="onDragOver($event)" (drop)="onDrop($event)" >
+        <div [id]="container.id" class="container" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
           <img *ngFor="let image of container.images | keyvalue; let i = index;"
-
             [id]="'image' + containerIndex + '_' + image.key" [src]="image.value" cdkDrag cdkDragBoundary=".container"
+            (mousedown)="startResize($event, i, false)" (mousemove)="resizeImage($event, i, false)"
+            (mouseup)="endResize($event, i)" [style.width]="container.imagePositions[i]?.width + 'px'"
+            [style.height]="container.imagePositions[i]?.height + 'px'" (cdkDragEnded)="onDragEnded($event, i)"
+            style="position: absolute;">
+          
+          <div (dragover)="onDragOver($event)" (drop)="onDrop($event)">
+            <input type="text" draggable="true" *ngFor="let textField of container.textFields | keyvalue; let j = index"
+              [id]="'textField' + containerIndex + '_' + textField.key" [(ngModel)]="container.textFields[textField.key]"
+              (mousedown)="startResize($event, j, true)" (mousemove)="resizeImage($event, j, true)"
+              (mouseup)="endResize($event, j)" (dragstart)="onDragStart($event, 'textField' + containerIndex + '_' + textField.key)"
+              [style.width]="container.textFieldPositions[textField.key]?.width + 'px'"
+              [style.height]="container.textFieldPositions[textField.key]?.height + 'px'" style="position: absolute;">
+          </div>
+          
             
-            (cdkDragEnded)="onDragEnded($event, i)" style="position: absolute; width: 130px; height: 130px;">
-
-            <div class="example-handle" cdkDragHandle>
-              <!-- <svg width="24px" fill="currentColor" viewBox="0 0 60 40"></svg> -->
-            </div>
         </div>
       </div>
     </div>
   </div>
 
   <div class="storyboardNav">
-    <button *ngFor="let container of containers; let i = index" (click)="activateContainer(i)" (click)="updateImagePositions()">
+    <button *ngFor="let container of containers; let i = index" (click)="activateContainer(i)">
       {{ i + 1 }}
     </button>
-    <button (click)="addContainer()" > + </button>
-
-    <button (click)="updateImagePositions()">Load Storyboard</button>
+    <button (click)="addContainer()"> + </button>
+    <button (click)="updateElementPositions()">Load Storyboard</button>
   </div>
 
   <app-sidebar class="sidebar" [draggedImage]="draggedImage" [draggedImagePosition]="draggedImagePosition"
-    (onDragStartEvent)="handleDragStartEvent($event)"></app-sidebar>
+    (onDragStartEvent)="handleDragStartEvent($event)">
+  </app-sidebar>
 </div>

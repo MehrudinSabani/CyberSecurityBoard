@@ -1,12 +1,18 @@
 import { CdkDragEnd } from '@angular/cdk/drag-drop';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ContainerStorageService } from '../services/container-storage.service';
-import { Container } from '../interfaces/container';
+import { ImagePosition } from '../interfaces/image-position';
 
-interface Position {
-  x: number;
-  y: number;
+interface Container {
+  id: string;
+  active: boolean;
+  images: { [key: string]: string };
+  imagePositions: { [key: string]: ImagePosition };
+  textFields: { [key: string]: string };
+  textFieldPositions: { [key: string]: ImagePosition };
 }
+
+
 
 @Component({
   selector: 'app-board',
@@ -14,34 +20,21 @@ interface Position {
   styleUrls: ['./board.component.css']
 })
 
-export class BoardComponent implements OnInit{
+export class BoardComponent implements OnInit {
 
-  imagePositions: { x: number; y: number; }[] = [];
+  imagePositions: ImagePosition[] = [];
+  @ViewChild('container') container!: ElementRef;
 
-  @ViewChild('container')
-  container!: ElementRef;
+  activeContainer: Container;  // Add this line
 
-  containers: Container[] = [
-    {
-      id: 'container0',
-      active: true,
-      images: '',
-      imagePositions: {},
-    },
-  ];
+  containers: Container[] = [];
 
-  draggedImage: string | null = null;
-  draggedImagePosition: { x: number; y: number } | null = null;
-
-  handleDragStartEvent(eventData: { event: DragEvent; image: string }) {
-    this.draggedImage = eventData.image;
-    this.draggedImagePosition = { x: eventData.event.clientX, y: eventData.event.clientY };
-  }
+  draggedImage: string;
+  draggedImagePosition: ImagePosition;
 
   constructor(private containerStorageService: ContainerStorageService) { }
 
   async ngOnInit() {
-
     const containers = await this.containerStorageService.getContainers();
     if (containers) {
       this.containers = containers;
@@ -50,106 +43,260 @@ export class BoardComponent implements OnInit{
     }
   }
 
-
+  handleDragStartEvent(eventData: { event: DragEvent; image: string }) {
+    this.draggedImage = eventData.image;
+    
+    const activeContainer = this.containers.find((container) => container.active);
+    if (activeContainer) {
+      // Iterate over the keys
+      const imageKey = Object.keys(activeContainer.images)
+        .find(key => activeContainer.images[key] === this.draggedImage);
+      if (imageKey) {
+        // Get the image position using the key
+        const imagePosition = activeContainer.imagePositions[imageKey];
+        // Store the current dimensions of the image
+        this.draggedImagePosition = { 
+          x: eventData.event.clientX, 
+          y: eventData.event.clientY, 
+          width: imagePosition.width, 
+          height: imagePosition.height 
+        };
+      }
+    }
+  }
+  
+  
   async addContainer() {
-    this.containers.forEach((container) => {
-      container.active = false;
-    });
-    // setting the newly added container to the active one
-    this.containers.push({
+    this.containers.forEach((container) => (container.active = false));
+    const newContainer: Container = {
       id: `container${this.containers.length}`,
       active: true,
-      images: [],
-      imagePositions: [],
-    });
-    await this.containerStorageService.saveContainers(this.containers); // Save containers to Firestore
-    
+      images: {},
+      imagePositions: {},
+      textFields:{},
+      textFieldPositions: {}
+    };
+    this.containers.push(newContainer);
+    await this.containerStorageService.saveContainers(this.containers);
   }
 
   async activateContainer(index: number) {
-    this.containers.forEach((container, i) => {
-      container.active = i === index;
-    });
-    
+    this.containers.forEach((container, i) => (container.active = i === index));
   }
 
-  // thanks to this function we gather information about the image we are currently dragging
-  onDragStart(event: DragEvent, image: string) {
-    this.draggedImage = image;
-    this.draggedImagePosition = { x: event.clientX, y: event.clientY };
-    
+  onDragStart(event: DragEvent, id: string) {
+    event.dataTransfer?.setData('text/plain', id);
   }
 
   onDragOver(event: DragEvent) {
     event.preventDefault();
-    
   }
 
-  // updated for multiple containers
   async onDrop(event: DragEvent) {
     event.preventDefault();
-    const url = this.draggedImage;
-    if (url) {
-      const activeContainer = this.containers.find(container => container.active);
-      if (activeContainer) {
-        const containerElement = document.getElementById(activeContainer.id);
-        if (containerElement) {
-          const x = event.clientX - containerElement.offsetLeft - 50;
-          const y = event.clientY - containerElement.offsetTop - 50;
-          const newIndex = Object.keys(activeContainer.images).length.toString();
-          activeContainer.images[newIndex] = url;
-          activeContainer.imagePositions[newIndex] = { x, y };
-
-          // Check for undefined values before saving to Firestore
-          if (Object.values(activeContainer.images).includes(undefined) || Object.values(activeContainer.imagePositions).includes(undefined)) {
-            console.error('Error: Undefined values found in container data');
-          } else {
-            await this.containerStorageService.saveContainers(this.containers);
-          }
-        }
+    event.preventDefault();
+    if (event.dataTransfer) {
+      const id = event.dataTransfer.getData('text/plain');
+      const inputElement = document.getElementById(id);
+      if (inputElement) {
+        inputElement.style.left = `${event.clientX}px`;
+        inputElement.style.top = `${event.clientY}px`;
       }
     }
+    const url = this.draggedImage;
+    if (!url) return;
+
+    const activeContainer = this.containers.find((container) => container.active);
+    if (!activeContainer) return;
+
+    const containerElement = document.getElementById(activeContainer.id);
+    if (!containerElement) return;
+
+    const x = event.clientX - containerElement.offsetLeft - 40;
+    const y = event.clientY - containerElement.offsetTop - 40;
+
+    const newIndex = Object.keys(activeContainer.images).length.toString();
+
+    activeContainer.images[newIndex] = url;
+    // Set the dimensions to the stored values
+    activeContainer.imagePositions[newIndex] = { 
+      x, y, 
+      width: 100,
+      height: 100,
+    };
+
+    if (
+      Object.keys(activeContainer.images).some((key) => activeContainer.images[key] === undefined) ||
+      Object.keys(activeContainer.imagePositions).some((key) => activeContainer.imagePositions[key] === undefined)
+    ) {
+      console.error('Error: Undefined values found in container data');
+    } else {
+      await this.containerStorageService.saveContainers(this.containers);
+    }
+
   }
 
-  // reduced complexity
   async onDragEnded(event: CdkDragEnd, index: number) {
     const x = event.source._dragRef.getFreeDragPosition().x;
     const y = event.source._dragRef.getFreeDragPosition().y;
-    const activeContainer = this.containers.find(c => c.active);
-    if (activeContainer) {
-      activeContainer.imagePositions[index] = { x, y };
-      await this.savePosition();
+  
+    const activeContainer = this.containers.find((container) => container.active);
+    if (!activeContainer) return;
+  
+    const currentImagePosition = activeContainer.imagePositions[index];
+    if (!currentImagePosition) {
+      return console.error('No image position found for this index: ', index);
     }
-      // HINT - calling the updateImagePositions here will cause the weird non-precise spacing
-    // this.updateImagePositions();
+    
+    activeContainer.imagePositions[index] = { 
+      x, y, 
+      width: currentImagePosition.width, 
+      height: currentImagePosition.height 
+    };
+    await this.savePosition();
   }
+  
 
-  updateImagePositions() {
+  // updateImagePositions() {
+  //   this.containers.forEach((container, containerIndex) => {
+  //     if (!container.active) return;
+
+  //     Object.entries(container.imagePositions).forEach(([index, position]) => {
+  //       const imageElement = document.getElementById(`image${containerIndex}_${index}`);
+  //       if (!imageElement || typeof position !== 'object' || position === null) return;
+
+  //       const pos = position as ImagePosition;
+  //       imageElement.style.left = `${pos.x}px`;
+  //       imageElement.style.top = `${pos.y}px`;
+  //       imageElement.style.width = `${pos.width}px`;
+  //       imageElement.style.height = `${pos.height}px`;
+  //     });
+  //   });
+  // }
+  
+  updateElementPositions() {
     this.containers.forEach((container, containerIndex) => {
-      if (container.active) {
-        Object.entries(container.imagePositions).forEach(([index, position]) => {
-          const imageElement = document.getElementById(`image${containerIndex}_${index}`);
-          if (imageElement && typeof position === 'object' && position !== null) {
-            const pos = position as Position; // Cast the position object to the Position interface
-            imageElement.style.left = `${pos.x}px`;
-            imageElement.style.top = `${pos.y}px`;
-          }
-        });
-      }
+      if (!container.active) return;
+  
+      Object.entries(container.imagePositions).forEach(([index, position]) => {
+        const imageElement = document.getElementById(`image${containerIndex}_${index}`);
+        if (!imageElement || typeof position !== 'object' || position === null) return;
+  
+        const pos = position as ImagePosition;
+        imageElement.style.left = `${pos.x}px`;
+        imageElement.style.top = `${pos.y}px`;
+        imageElement.style.width = `${pos.width}px`;
+        imageElement.style.height = `${pos.height}px`;
+      });
+  
+      Object.entries(container.textFieldPositions).forEach(([index, position]) => {
+        const textFieldElement = document.getElementById(`textField${containerIndex}_${index}`);
+        if (!textFieldElement || typeof position !== 'object' || position === null) return;
+  
+        const pos = position as ImagePosition;
+        textFieldElement.style.left = `${pos.x}px`;
+        textFieldElement.style.top = `${pos.y}px`;
+        textFieldElement.style.width = `${pos.width}px`;
+        textFieldElement.style.height = `${pos.height}px`;
+      });
     });
   }
+  
 
-  getPosition(el: Element | null) {
-    let x = 0;
-    let y = 0;
-    while (el && !isNaN((el as HTMLElement).offsetLeft) && !isNaN((el as HTMLElement).offsetTop)) {
-      x += (el as HTMLElement).offsetLeft - (el as HTMLElement).scrollLeft;
-      y += (el as HTMLElement).offsetTop - (el as HTMLElement).scrollTop;
-      el = (el as HTMLElement).offsetParent;
-    }
-    return { top: y, left: x };
-  }  
   async savePosition() {
-    await this.containerStorageService.saveContainers(this.containers); // Save containers to Firestore
+    await this.containerStorageService.saveContainers(this.containers);
   }
+
+  // image resizing
+  isResizing = false;
+startX = 0;
+startY = 0;
+
+startResize(event: MouseEvent, index: number, isTextField: boolean) {
+  const element = event.target as HTMLElement;
+  const elementRect = element.getBoundingClientRect();
+
+  // Adjust the threshold values as needed
+  const threshold = 20;
+  const isWithinThreshold =
+    event.clientX > elementRect.right - threshold &&
+    event.clientY > elementRect.bottom - threshold;
+
+  if (isWithinThreshold) {
+    this.isResizing = true;
+    this.startX = event.clientX;
+    this.startY = event.clientY;
+
+    const activeContainer = this.containers.find((container) => container.active);
+    if (activeContainer) {
+      // Copy the properties of the current ImagePosition to create a new instance
+      const currentElementPosition = isTextField
+        ? activeContainer.textFieldPositions[index]
+        : activeContainer.imagePositions[index];
+        
+      this.draggedImagePosition = { 
+        x: currentElementPosition.x, 
+        y: currentElementPosition.y, 
+        width: currentElementPosition.width, 
+        height: currentElementPosition.height 
+      };
+    }
+  }
+}
+
+
+resizeImage(event: MouseEvent, index: number, isTextField: boolean) {
+  if (this.isResizing) {
+    const activeContainer = this.containers.find((container) => container.active);
+    if (activeContainer) {
+      const currentElementPosition = isTextField
+        ? activeContainer.textFieldPositions[index]
+        : activeContainer.imagePositions[index];
+      
+      // Calculate the new width and height based on the mouse's current position
+      const newWidth = this.draggedImagePosition.width + event.clientX - this.startX;
+      const newHeight = this.draggedImagePosition.height + event.clientY - this.startY;
+
+      // Update the width and height of the current ImagePosition
+      currentElementPosition.width = newWidth;
+      currentElementPosition.height = newHeight;
+      
+      // Optionally, update the element's style for immediate visual feedback
+      const element = event.target as HTMLElement;
+      element.style.width = `${newWidth}px`;
+      element.style.height = `${newHeight}px`;
+    }
+  }
+}
+
+
+endResize(event: MouseEvent, index: number) {
+  this.isResizing = false;
+}
+
+// adding text
+async addTextField() {
+  const activeContainer = this.containers.find((container) => container.active);
+  if (!activeContainer) return;
+
+  const newIndex = Object.keys(activeContainer.textFields).length.toString();
+
+  // Create a new object for textFields with the new key-value pair
+  activeContainer.textFields = {
+    ...activeContainer.textFields,
+    [newIndex]: ''
+  };
+
+  // Create a new object for textFieldPositions with the new key-value pair
+  activeContainer.textFieldPositions = {
+    ...activeContainer.textFieldPositions,
+    [newIndex]: { x: 50, y: 50, width: 100, height: 50 }
+  };
+
+  await this.containerStorageService.saveContainers(this.containers);
+}
+
+
+
+
 }

@@ -21,7 +21,7 @@ import { provideStorage,getStorage } from '@angular/fire/storage';
 import { BoardComponent } from './board/board.component';
 import { UploadImageDetailsComponent } from './upload-image-details/upload-image-details.component';
 import { RouterModule, Routes } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SidebarComponent } from './board/sidebar/sidebar.component';
 import { ResizableImageComponent } from './resizable-image/resizable-image.component';
 import { ResizableDragableComponent } from './resizable-dragable/resizable-dragable.component';
@@ -53,6 +53,7 @@ const routes: Routes = [
     AppRoutingModule,
     DragDropModule,
     ReactiveFormsModule,
+    FormsModule,
 
     RouterModule.forRoot(routes),
 
