@@ -3,27 +3,31 @@
     <div *ngFor="let container of containers; let containerIndex = index" [id]="container.id">
       <div *ngIf="container.active">
         <div [id]="container.id" class="container" (dragover)="onDragOver($event)" (drop)="onDrop($event)">
-          <img *ngFor="let image of container.images | keyvalue; let i = index;"
+          <img *ngFor="let image of container.images | keyvalue; let i = index; trackBy: trackByFn"
             [id]="'image' + containerIndex + '_' + image.key" [src]="image.value" cdkDrag cdkDragBoundary=".container"
             (mousedown)="startResize($event, i, false)" (mousemove)="resizeImage($event, i, false)"
-            (mouseup)="endResize($event, i)" [style.width]="container.imagePositions[i]?.width + 'px'"
-            [style.height]="container.imagePositions[i]?.height + 'px'" (cdkDragEnded)="onDragEnded($event, i)"
+            (mouseup)="endResize()" [style.width]="container.imagePositions[i].width + 'px'"
+            [style.height]="container.imagePositions[i].height + 'px'" (cdkDragEnded)="onDragEnded($event, i)"
             style="position: absolute;">
           
-          <div (dragover)="onDragOver($event)" (drop)="onDrop($event)">
-            <input type="text" draggable="true" *ngFor="let textField of container.textFields | keyvalue; let j = index"
-              [id]="'textField' + containerIndex + '_' + textField.key" [(ngModel)]="container.textFields[textField.key]"
-              (mousedown)="startResize($event, j, true)" (mousemove)="resizeImage($event, j, true)"
-              (mouseup)="endResize($event, j)" (dragstart)="onDragStart($event, 'textField' + containerIndex + '_' + textField.key)"
-              [style.width]="container.textFieldPositions[textField.key]?.width + 'px'"
-              [style.height]="container.textFieldPositions[textField.key]?.height + 'px'" style="position: absolute;">
-          </div>
-          
+            <div>
+              <input type="text" draggable="true" 
+                *ngFor="let textField of container.textFields | keyvalue; let j = index; trackBy: trackByFn"
+                [id]="'textField' + containerIndex + '_' + textField.key" [(ngModel)]="container.textFields[textField.key]"
+                (mousedown)="startResize($event, j, true)" (mousemove)="resizeImage($event, j, true)"
+                (mouseup)="endResize()" (dragstart)="onTextDragStart($event, 'textField' + containerIndex + '_' + textField.key)"
+                (dragend)="onTextDragEnd($event, 'textField' + containerIndex + '_' + textField.key)"
+                [style.width]="container.textFieldPositions[textField.key].width + 'px'"
+                [style.height]="container.textFieldPositions[textField.key].height + 'px'" style="position: absolute " >
+            </div>
             
+          
         </div>
+        
       </div>
     </div>
   </div>
+
 
   <div class="storyboardNav">
     <button *ngFor="let container of containers; let i = index" (click)="activateContainer(i)">
@@ -31,6 +35,10 @@
     </button>
     <button (click)="addContainer()"> + </button>
     <button (click)="updateElementPositions()">Load Storyboard</button>
+
+
+    <button (click)="addTextField()">Input text</button>
+
   </div>
 
   <app-sidebar class="sidebar" [draggedImage]="draggedImage" [draggedImagePosition]="draggedImagePosition"
