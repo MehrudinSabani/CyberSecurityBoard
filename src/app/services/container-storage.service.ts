@@ -83,22 +83,4 @@ export class ContainerStorageService {
   }
   
 
-  async getTestData(): Promise<{height?: number, width?: number, left?: number, top?: number}>{
-    const docRef = doc(this.firestore, 'testData', 'WRYi3BA3VnZXEyU933JK');
-    const docSnap = await getDoc(docRef);
-  
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      return {
-        height: data?.['height'],
-        width: data?.['width'],
-        left: data?.['left'],
-        top: data?.['top'],
-      }
-    } else {
-      console.log("No such document!");
-      return {};
-    }
-  }
-  
 }

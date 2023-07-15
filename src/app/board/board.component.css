@@ -59,7 +59,10 @@ input:focus {
 
 
 
-
+img{
+  border: #000;
+  border-style: dotted;
+}
 
 /* use this as an alternative to set style directly from firebase data */
 /* 

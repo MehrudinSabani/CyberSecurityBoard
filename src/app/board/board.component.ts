@@ -33,6 +33,8 @@ export class BoardComponent implements OnInit {
     } else {
       await this.containerStorageService.saveContainers(this.containers);
     }
+
+    this.updateElementPositions();
   }
 
   handleDragStartEvent(eventData: { event: DragEvent; image: string }) {
@@ -74,6 +76,7 @@ export class BoardComponent implements OnInit {
 
   async activateContainer(index: number) {
     this.containers.forEach((container, i) => (container.active = i === index));
+    this.updateElementPositions();
   }
 
   onTextDragStart(event: DragEvent, id: string) {
