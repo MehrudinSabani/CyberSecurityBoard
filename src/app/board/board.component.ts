@@ -37,6 +37,7 @@ export class BoardComponent implements OnInit {
     this.updateElementPositions();
   }
 
+  // this is responsible for dropping from sidebar
   handleDragStartEvent(eventData: { event: DragEvent; image: string }) {
     this.draggedImage = eventData.image;
     
