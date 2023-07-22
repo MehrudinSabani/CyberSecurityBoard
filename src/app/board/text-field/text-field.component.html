@@ -1,0 +1,21 @@
+ 
+
+  <!-- old implementation -->
+
+  <!-- <div>
+    <input
+      type="text"
+      draggable="true"
+      *ngFor="let textField of textFields | keyvalue; let j = index; trackBy: trackByFn"
+      [id]="containerIndex + '_' + textField.key"
+      [(ngModel)]="textFields[textField.key]"
+      (mousedown)="startResize($event, j, true)"
+      (mousemove)="resizeImage($event, j, true)"
+      (mouseup)="endResize()"
+      (dragstart)="onTextDragStart($event, containerIndex + '_' + textField.key)"
+      (dragend)="onTextDragEnd($event, containerIndex + '_' + textField.key)"
+      [style.width]="textFieldPositions[textField.key].width + 'px'"
+      [style.height]="textFieldPositions[textField.key].height + 'px'"
+      style="position: absolute"
+    >
+  </div> -->
