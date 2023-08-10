@@ -1,0 +1,11 @@
+.menuNav{
+
+
+    margin: 30px auto;
+}
+
+.create, .explore{
+    padding: 20px;
+    border-radius: 5px;
+    width: 200px;
+}

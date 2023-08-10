@@ -1,6 +1,6 @@
 import { CdkDragEnd } from '@angular/cdk/drag-drop';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ContainerStorageService } from 'src/app/services/container-storage.service';
+import { StoryBoardService } from 'src/app/services/storyboard-storage.service';
 
 @Component({
   selector: 'app-image',
@@ -18,8 +18,11 @@ export class ImageComponent {
   @Input() container: any;
   @Input() containerIndex: any;
 
+  // needed for identifying in which storyboard to update the changes
+  @Input() storyboardId: string;
 
-  constructor(private containerStorageService: ContainerStorageService) { }
+
+  constructor(private storyBoardService: StoryBoardService) { }
 
 
   startResize(event: MouseEvent, index: number, isTextField: boolean) {
@@ -95,21 +98,23 @@ export class ImageComponent {
     if (!currentImagePosition) {
       return console.error('No image position found for this index: ', index);
     }
-
+  
     activeContainer.imagePositions[index] = {
       x, y,
       width: currentImagePosition.width,
       height: currentImagePosition.height
     };
     await this.savePosition();
-    console.log("image drag works")
   }
-
 
   async savePosition() {
-    await this.containerStorageService.saveContainers(this.containers);
+    if (this.storyboardId) {
+      const storyboard = await this.storyBoardService.getStoryboard(this.storyboardId);
+      storyboard!.id = this.storyboardId;
+      storyboard!.containers = this.containers;
+      await this.storyBoardService.saveStoryboards([storyboard!]);
+    }
   }
-
   trackByFn(item: any) {
     return item.key;
   }

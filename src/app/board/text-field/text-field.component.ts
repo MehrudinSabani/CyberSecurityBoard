@@ -1,12 +1,9 @@
-import { CdkDragEnd } from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragEnd } from '@angular/cdk/drag-drop';
 import { Component, Input } from '@angular/core';
+import { Container } from 'src/app/interfaces/container';
 import { ImagePosition } from 'src/app/interfaces/image-position';
-import { ContainerStorageService } from 'src/app/services/container-storage.service';
+import { StoryBoardService } from 'src/app/services/storyboard-storage.service';
 
-interface TextField {
-  key: string;
-  value: any; // Replace 'any' with the actual type if known
-}
 
 @Component({
   selector: 'app-text-field',
@@ -14,22 +11,20 @@ interface TextField {
   styleUrls: ['./text-field.component.css']
 })
 
-
-
 export class TextFieldComponent {
-
 
   @Input() isResizing: boolean;
   @Input() startX: number;
   @Input() startY: number;
-  @Input() draggedImagePosition: any;
-  @Input() containers: any[];
+  @Input() draggedImagePosition: ImagePosition;
+  @Input() containers: Container[];
 
-  @Input() container: any;
-  @Input() containerIndex: any;
+  @Input() container: Container;
+  @Input() containerIndex: number;
 
+  @Input() storyboardId: string;
 
-  constructor(private containerStorageService: ContainerStorageService) { }
+  constructor(private storyBoardService: StoryBoardService) { }
 
 
   startResize(event: MouseEvent, index: number, isTextField: boolean) {
@@ -94,35 +89,7 @@ export class TextFieldComponent {
     this.isResizing = false;
   }
 
-  async onDragEnded(event: CdkDragEnd, index: number) {
-    const x = event.source._dragRef.getFreeDragPosition().x;
-    const y = event.source._dragRef.getFreeDragPosition().y;
 
-    const activeContainer = this.containers.find((container) => container.active);
-    if (!activeContainer) return;
-
-    const currentImagePosition = activeContainer.imagePositions[index];
-    if (!currentImagePosition) {
-      return console.error('No image position found for this index: ', index);
-    }
-
-    activeContainer.imagePositions[index] = {
-      x, y,
-      width: currentImagePosition.width,
-      height: currentImagePosition.height
-    };
-    await this.savePosition();
-    console.log("image drag works")
-  }
-
-
-  async savePosition() {
-    await this.containerStorageService.saveContainers(this.containers);
-  }
-
-  trackByFn(item: any) {
-    return item.key;
-  }
 
 
   // text field specific methods
@@ -138,39 +105,49 @@ export class TextFieldComponent {
   }
 
 
-  onTextDragEnd(event: DragEvent, id: string) {
-    const textFieldElement = event.target as HTMLElement;
-    
+  async onTextDragEnd(event: CdkDragEnd, id: string) {
     // Get the new position of the text field
-    const newX = textFieldElement.offsetLeft;
-    const newY = textFieldElement.offsetTop;
-    
+    const { x: newX, y: newY } = event.source._dragRef.getFreeDragPosition();
+  
     // Find the active container
     const activeContainer = this.containers.find((container) => container.active);
-    
+  
     // Initialize textFieldPositions[id] if it doesn't exist
     if (activeContainer && !activeContainer.textFieldPositions[id]) {
       activeContainer.textFieldPositions[id] = { x: 0, y: 0, width: 100, height: 100 };
     }
-    
-  // Extract the original key from id
-  const originalKey = id.split('_').pop();
-
-  if (originalKey) {
-    // Update the textFieldPositions object
-    if (activeContainer && activeContainer.textFieldPositions[originalKey]) {
-      activeContainer.textFieldPositions[originalKey].x = newX;
-      activeContainer.textFieldPositions[originalKey].y = newY;
-    
-      console.log("drag works")
-      // Save the updated containers
-      this.containerStorageService.saveContainers(this.containers);
+  
+    // Extract the original key from id
+    const originalKey = id.split('_').pop();
+  
+    if (originalKey) {
+      // Update the textFieldPositions object
+      if (activeContainer && activeContainer.textFieldPositions[originalKey]) {
+        activeContainer.textFieldPositions[originalKey].x = newX;
+        activeContainer.textFieldPositions[originalKey].y = newY;
+  
+        // Save the updated containers
+        await this.savePosition();
+      }
+    } else {
+      console.error('Error: originalKey is undefined');
     }
-  } else {
-    console.error('Error: originalKey is undefined');
-  }
   }
   
 
+  
+  async savePosition() {
+    if (this.storyboardId) {
+      const storyboard = await this.storyBoardService.getStoryboard(this.storyboardId);
+      storyboard!.id = this.storyboardId;
+      storyboard!.containers = this.containers;
+      await this.storyBoardService.saveStoryboards([storyboard!]);
+    }
+  }
+  
+
+  trackByFn(item: any) {
+    return item.key;
+  }
 
 }

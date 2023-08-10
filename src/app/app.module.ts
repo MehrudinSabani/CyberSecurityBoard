@@ -25,11 +25,17 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SidebarComponent } from './board/sidebar/sidebar.component';
 import { TextFieldComponent } from './board/text-field/text-field.component';
 import { ImageComponent } from './board/image/image.component';
+import { MainMenuComponent } from './main-menu/main-menu.component';
+import { ExploreComponent } from './main-menu/explore/explore.component';
+import { CreateComponent } from './main-menu/create/create.component';
 
 const routes: Routes = [
-  { path: '', component: BoardComponent}, 
+  { path: '', component: MainMenuComponent}, 
   { path: 'storyboard', component: BoardComponent},
   { path: 'upload', component: UploadImageDetailsComponent}, 
+  { path: 'storyboard', component: MainMenuComponent},
+  { path: 'storyboard/new/:id', component: BoardComponent},
+  { path: 'storyboard/explore', component: ExploreComponent}
 
 
  
@@ -45,6 +51,9 @@ const routes: Routes = [
     SidebarComponent,
     ImageComponent,
     TextFieldComponent,
+    MainMenuComponent,
+    ExploreComponent,
+    CreateComponent,
   ],
   imports: [
     BrowserModule,
