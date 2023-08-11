@@ -1,1 +1,7 @@
-<p>explore works!</p>
+<div class="storyContainer" *ngFor="let story of storyInfo">
+    <p>{{story.storyName}}</p>
+    
+    <p>{{story.id}}</p>
+
+    <button [routerLink]="'/storyboard/edit/' + story.id">View</button>
+</div>

@@ -40,7 +40,7 @@ export class MainMenuComponent {
       .then((savedStoryboards) => {
         const newStoryboard = savedStoryboards[savedStoryboards.length - 1];
         // console.log(newStoryboard.id);
-        this.router.navigate([`/storyboard/new/${newStoryboard.id}`]);
+        this.router.navigate([`/storyboard/edit/${newStoryboard.id}`]);
       });
     }
     

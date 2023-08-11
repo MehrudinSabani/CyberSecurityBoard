@@ -34,7 +34,7 @@ const routes: Routes = [
   { path: 'storyboard', component: BoardComponent},
   { path: 'upload', component: UploadImageDetailsComponent}, 
   { path: 'storyboard', component: MainMenuComponent},
-  { path: 'storyboard/new/:id', component: BoardComponent},
+  { path: 'storyboard/edit/:id', component: BoardComponent},
   { path: 'storyboard/explore', component: ExploreComponent}
 
 

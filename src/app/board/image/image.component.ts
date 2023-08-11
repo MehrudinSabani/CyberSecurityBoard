@@ -24,6 +24,9 @@ export class ImageComponent {
 
   constructor(private storyBoardService: StoryBoardService) { }
 
+  OnInit(){
+    console.log("from image", this.container.images)
+  }
 
   startResize(event: MouseEvent, index: number, isTextField: boolean) {
     const element = event.target as HTMLElement;

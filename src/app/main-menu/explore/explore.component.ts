@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Storyboard } from 'src/app/interfaces/story-board';
 import { StoryBoardService } from 'src/app/services/storyboard-storage.service';
 
 @Component({
@@ -9,23 +10,25 @@ import { StoryBoardService } from 'src/app/services/storyboard-storage.service';
 export class ExploreComponent {
 
 
-  storyBoardName: string[];
+  storyInfo: Storyboard[];
+
   // todo: add a real user
-  storyBoardAuthor: string = 'user';
+  storyboardAuthor: string = 'user';
 
-
-  constructor(storyBoardService: StoryBoardService) {
+  constructor(private storyBoardService: StoryBoardService) {
 
   }
 
   ngOnInit() {
+    this.loadStoryboards();
 
-    this.loadStoryBoards();
   }
 
-  loadStoryBoards(){
-
-
+  async loadStoryboards() {
+    const storyboards = await this.storyBoardService.getAllStoryboards();
+    if (storyboards) {
+      this.storyInfo = storyboards.map(storyboard => storyboard);
+    }
   }
 
 

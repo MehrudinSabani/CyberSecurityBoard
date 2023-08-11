@@ -1,0 +1,8 @@
+.storyContainer{
+
+    display: inline-block;
+    margin: 10px;
+    background-color: antiquewhite;
+    width: 200px;
+    height: 200px;
+}

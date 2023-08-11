@@ -19,10 +19,11 @@ export class BoardComponent implements OnInit {
 
   @ViewChild('container') container!: ElementRef;
 
-  activeContainer: Container;  // Add this line
+  // activeContainer: Container;  // Add this line
 
   storyboardName: string;
   storyId: string;
+
   containers: Container[] = [];
 
   draggedImage: string;
@@ -40,11 +41,17 @@ export class BoardComponent implements OnInit {
     if (this.storyId) {
       const storyboard = await this.storyBoardService.getStoryboard(this.storyId);
 
+      console.log('storyboard', storyboard?.containers);
+
       if (storyboard) {
         this.storyboardName = storyboard.storyName;
         this.containers = storyboard.containers;
       } else {
+
         // todo: this is bad error handling 
+
+        // instead Show error message or redirect to another page
+
         const newStoryboard: Storyboard = {
           storyName: 'Defense Story',
           containers: this.containers
@@ -153,7 +160,6 @@ export class BoardComponent implements OnInit {
     if (!url) return;
 
     const activeContainer = this.containers.find((container) => container.active);
-    // Your existing code...
 
     if (!activeContainer) return;
 
@@ -191,7 +197,7 @@ export class BoardComponent implements OnInit {
       }
     }
   }
-  
+
   updateElementPositions() {
 
     this.updateImagePositions();
@@ -238,24 +244,24 @@ export class BoardComponent implements OnInit {
   async addTextField() {
     const activeContainer = this.containers.find((container) => container.active);
     if (!activeContainer) return;
-  
+
     const newIndex = Object.keys(activeContainer.textFields).length.toString();
-  
+
     // Create a new object for textFields with the new key-value pair
     activeContainer.textFields = {
       ...activeContainer.textFields,
       [newIndex]: ''
     };
-  
+
     // Create a new object for textFieldPositions with the new key-value pair
     activeContainer.textFieldPositions = {
       ...activeContainer.textFieldPositions,
       [newIndex]: { x: 50, y: 50, width: 80, height: 40 }
     };
-  
+
     // Get the storyboard id
     const storyboardId = this.route.snapshot.paramMap.get('id');
-  
+
     // If the storyboard id exists, get the storyboard and update its containers
     if (storyboardId) {
       const storyboard = await this.storyBoardService.getStoryboard(storyboardId);
@@ -264,6 +270,6 @@ export class BoardComponent implements OnInit {
       await this.storyBoardService.saveStoryboards([storyboard!]);
     }
   }
-  
+
 
 }
