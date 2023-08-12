@@ -61,26 +61,49 @@ export class StoryBoardService {
     if (storyboardDoc.exists()) {
       const storyboardData = storyboardDoc.data();
       const containersData = storyboardData['containers'];
-  
+      
       const containers: Container[] = containersData.map((containerData: Container) => {
-        // Convert images and imagePositions objects to arrays of objects with keys
         const imagesArray = Object.entries(containerData.images).map(([key, value]) => ({ key, value }));
         const imagePositionsArray = Object.entries(containerData.imagePositions).map(([key, value]) => ({ key, value }));
-  
-        // Convert textFields and textFieldPositions objects to arrays of objects with keys
         const textFieldsArray = Object.entries(containerData.textFields).map(([key, value]) => ({ key, value }));
         const textFieldPositionsArray = Object.entries(containerData.textFieldPositions).map(([key, value]) => ({ key, value }));
-  
+      
+        const images = imagesArray.reduce((acc: { [key: string]: string }, obj: any) => {
+          acc[obj.key] = obj.value.value[0];  // Access the first element of the value array
+          return acc;
+        }, {});
+      
+        const imagePositions = imagePositionsArray.reduce(
+          (acc: { [key: string]: { x: number; y: number, width: number, height: number } }, obj: any) => {
+            acc[obj.key] = obj.value.value;  // Access the value object directly
+            return acc;
+          },
+          {}
+        );
+      
+        const textFields = textFieldsArray.reduce((acc: { [key: string]: string }, obj: any) => {
+          acc[obj.key] = obj.value.value;  // Access the value directly
+          return acc;
+        }, {});
+      
+        const textFieldPositions = textFieldPositionsArray.reduce(
+          (acc: { [key: string]: { x: number; y: number, width: number, height: number } }, obj: any) => {
+            acc[obj.key] = obj.value.value;  // Access the value object directly
+            return acc;
+          },
+          {}
+        );
+      
         return {
           id: containerData.id,
           active: containerData.active,
-          images: imagesArray.map((image: any) => image.value.value[0]),
-          imagePositions: imagePositionsArray.map((imagePosition) => imagePosition.value),
-          textFields: textFieldsArray.map((textField: any) => textField.value.value), // Access the text value directly
-          textFieldPositions: textFieldPositionsArray.map((textFieldPosition) => textFieldPosition.value),
+          images,
+          imagePositions,
+          textFields,
+          textFieldPositions,
         };
       });
-  
+      
       return {
         storyName: storyboardData['storyName'],
         containers: containers,
@@ -89,6 +112,7 @@ export class StoryBoardService {
       return null;
     }
   }
+  
   
 
 
