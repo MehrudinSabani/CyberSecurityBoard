@@ -80,16 +80,18 @@ export class ImageComponent {
   endResize() {
     this.isResizing = false;
   }
-
   onDragEnded(event: CdkDragEnd, index: number) {
-    const x = event.source._dragRef.getFreeDragPosition().x;
-    const y = event.source._dragRef.getFreeDragPosition().y;
-
+    const elementRect = event.source.element.nativeElement.getBoundingClientRect();
+    const containerRect = event.source.element.nativeElement.parentElement!.getBoundingClientRect();
+  
+    const x = elementRect.left - containerRect.left;
+    const y = elementRect.top - containerRect.top;
+  
     const currentImagePosition = this.container.imagePositions[index];
     if (!currentImagePosition) {
       return console.error('No image position found for this index: ', index);
     }
-
+  
     this.container.imagePositions[index] = {
       x, y,
       width: currentImagePosition.width,
@@ -97,17 +99,17 @@ export class ImageComponent {
     };
     this.savePosition();
   }
-
+  
 
   async savePosition() {
-    if (!this.storyboardId) return;
-
-    const storyboard = await this.storyBoardService.getStoryboard(this.storyboardId);
-    if (!storyboard) return;
-
-    storyboard.containers = this.containers;
-    await this.storyBoardService.saveStoryboards([storyboard]);
+    if (this.storyboardId) {
+      const storyboard = await this.storyBoardService.getStoryboard(this.storyboardId);
+      storyboard!.id = this.storyboardId;
+      storyboard!.containers = this.containers;
+      await this.storyBoardService.saveStoryboards([storyboard!]);
+    }
   }
+  
 
   trackByFn(item: any) {
     return item.key;

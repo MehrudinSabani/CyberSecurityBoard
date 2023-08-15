@@ -89,9 +89,6 @@ export class TextFieldComponent {
     this.isResizing = false;
   }
 
-
-
-
   // text field specific methods
 
   onTextDragStart(event: DragEvent, id: string) {
@@ -107,7 +104,11 @@ export class TextFieldComponent {
 
   async onTextDragEnd(event: CdkDragEnd, id: string) {
     // Get the new position of the text field
-    const { x: newX, y: newY } = event.source._dragRef.getFreeDragPosition();
+    const elementRect = event.source.element.nativeElement.getBoundingClientRect();
+    const containerRect = event.source.element.nativeElement.parentElement!.getBoundingClientRect();
+  
+    const newX = elementRect.left - containerRect.left;
+    const newY = elementRect.top - containerRect.top;
   
     // Find the active container
     const activeContainer = this.containers.find((container) => container.active);
@@ -126,7 +127,7 @@ export class TextFieldComponent {
         activeContainer.textFieldPositions[originalKey].x = newX;
         activeContainer.textFieldPositions[originalKey].y = newY;
   
-        // Save the updated containers
+        // Save the updated containerso
         await this.savePosition();
       }
     } else {
@@ -134,7 +135,6 @@ export class TextFieldComponent {
     }
   }
   
-
   
   async savePosition() {
     if (this.storyboardId) {

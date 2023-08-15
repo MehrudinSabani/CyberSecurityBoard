@@ -4,6 +4,7 @@ import { Container } from '../interfaces/container';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Storyboard } from '../interfaces/story-board';
 import { ActivatedRoute } from '@angular/router';
+import { CdkDragMove } from '@angular/cdk/drag-drop';
 
 
 
@@ -16,11 +17,7 @@ import { ActivatedRoute } from '@angular/router';
 
 export class BoardComponent implements OnInit {
 
-  // todo: add error handling for loading images from server
   // todo: add a buffer icon until the story is fully loaded
-
-  // todo: add 
-
 
   @ViewChild('container') container!: ElementRef;
 
@@ -53,15 +50,13 @@ export class BoardComponent implements OnInit {
         this.containers = storyboard.containers;
       } else {
 
-        // todo: this is bad error handling 
-
+        // todo: additional measures for error handling
         // instead Show error message or redirect to another page
         console.log("Storyboard could not be created")
       }
     }
 
   }
-
 
   // this is responsible for dropping from sidebar
   handleDragStartEvent(eventData: { event: DragEvent; image: string }) {
@@ -98,14 +93,11 @@ export class BoardComponent implements OnInit {
     };
     this.containers.push(newContainer);
 
-
     const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
     storyboard!.id = this.storyId!;  // Set the id of the storyboard
     // this is cruicial for updating the existing storyboard, without this new sb gets generated with a different id
     storyboard!.containers = this.containers;
     await this.storyBoardService.saveStoryboards([storyboard!]);
-
-
   }
 
 
@@ -121,10 +113,6 @@ export class BoardComponent implements OnInit {
   async onDrop(event: DragEvent) {
     event.preventDefault();
 
-    let offsetX = 0, offsetY = 100;
-  
-    // ... existing code ...
-  
     const url = this.draggedImage;
     if (!url) return;
   
@@ -135,10 +123,8 @@ export class BoardComponent implements OnInit {
     const containerElement = document.getElementById(activeContainer.id);
     if (!containerElement) return;
   
-    const containerRect = containerElement.getBoundingClientRect();
-  
-    const x = event.clientX - containerRect.left - offsetX;
-    const y = event.clientY - containerRect.top - offsetY;
+    const x = event.offsetX;
+    const y = event.offsetY;
   
     const newIndex = Object.keys(activeContainer.images).length.toString();
   
@@ -169,29 +155,17 @@ export class BoardComponent implements OnInit {
     }
   }
 
-  updateElementPositions() {
-
-    this.updateImagePositions();
-    this.updateTextFieldPositions();
-
-  }
-
   updateImagePositions() {
     this.containers.forEach((container, containerIndex) => {
       if (!container.active) return;
-  
-      const containerElement = document.getElementById(container.id);
-      if (!containerElement) return;
-  
-      const containerRect = containerElement.getBoundingClientRect();
-  
+    
       Object.entries(container.imagePositions).forEach(([index, position]) => {
         const imageElement = document.getElementById(`image${containerIndex}_${index}`);
         if (!imageElement || typeof position !== 'object' || position === null) return;
   
         const pos = position as ImagePosition;
-        imageElement.style.left = `${containerRect.left + pos.x}px`;
-        imageElement.style.top = `${containerRect.top + pos.y}px`;
+        imageElement.style.left = `${pos.x}px`;
+        imageElement.style.top = `${pos.y}px`;
         imageElement.style.width = `${pos.width}px`;
         imageElement.style.height = `${pos.height}px`;
       });
@@ -213,6 +187,13 @@ export class BoardComponent implements OnInit {
         textFieldElement.style.height = `${pos.height}px`;
       });
     })
+  }
+
+  updateElementPositions() {
+
+    this.updateImagePositions();
+    this.updateTextFieldPositions();
+
   }
 
 
@@ -258,8 +239,4 @@ export class BoardComponent implements OnInit {
       this.updateElementPositions();
     }
   }
-  
-  
-  
-
 }

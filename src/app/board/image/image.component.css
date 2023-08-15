@@ -1,5 +1,6 @@
-img{
+img {
     border-style: dotted;
-    color: green;
+    border-color: green;
     border-radius: 1px;
-}
+  }
+  

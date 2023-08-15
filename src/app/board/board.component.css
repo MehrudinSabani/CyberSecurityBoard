@@ -1,14 +1,18 @@
 .storyBoard {
+  position: absolute;
+  top: 100px;
+  left: 50px;
   display: flex;
   flex-wrap: wrap;
 }
+
 
 .container {
   /* position: relative; */
   width: 1350px;
   height: 680px;
+  padding: 0;
   border: 1px solid black;
-  margin-right: 10px;
   flex: 1 0 calc(100% - 120px);
   /* Adjust the width to accommodate the sidebar */
 }
@@ -63,6 +67,9 @@ img{
   border: #000;
   border-style: dotted;
 }
+
+
+
 
 /* use this as an alternative to set style directly from firebase data */
 /* 
