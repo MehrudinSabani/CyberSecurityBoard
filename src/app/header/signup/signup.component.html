@@ -1,0 +1,25 @@
+<button mat-raised-button color="primary" routerLink="/home">
+    Home
+</button>
+
+<div>
+    <form [formGroup]="signupForm" (ngSubmit)="signup()">
+            <div appearance="outline">
+                <div>Full Name</div>
+                <input autocomplete="off" formControlName="displayName" type="text" matInput placeholder="Display Name">
+            </div>
+            <div appearance="outline">
+                <div>Email</div>
+                <input formControlName="email" type="email" matInput placeholder="Email">
+            </div>
+            <div appearance="outline">
+                <div>Password</div>
+                <input autocomplete="off" formControlName="password" type="password" matInput placeholder="Password">
+            </div>
+        <div *ngIf="firebaseErrorMessage != ''" class="error-style">
+            <span>{{ firebaseErrorMessage }}</span>
+        </div>
+
+        <button mat-raised-button color="primary">Signup</button>
+    </form>
+</div>

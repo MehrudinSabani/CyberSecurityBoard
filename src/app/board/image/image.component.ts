@@ -24,7 +24,7 @@ export class ImageComponent {
 
   constructor(private storyBoardService: StoryBoardService) { }
 
-  OnInit(){
+  OnInit() {
     console.log("from image", this.container.images)
   }
 
@@ -43,45 +43,36 @@ export class ImageComponent {
       this.startX = event.clientX;
       this.startY = event.clientY;
 
-      const activeContainer = this.containers.find((container) => container.active);
-      if (activeContainer) {
-        // Copy the properties of the current ImagePosition to create a new instance
-        const currentElementPosition = isTextField
-          ? activeContainer.textFieldPositions[index]
-          : activeContainer.imagePositions[index];
-
-        this.draggedImagePosition = {
-          x: currentElementPosition.x,
-          y: currentElementPosition.y,
-          width: currentElementPosition.width,
-          height: currentElementPosition.height
-        };
+      // Copy the properties of the current ImagePosition to create a new instance
+      if (isTextField) {
+        this.draggedImagePosition = { ...this.container.textFieldPositions[index] };
+      } else {
+        this.draggedImagePosition = { ...this.container.imagePositions[index] };
       }
+
     }
   }
 
 
   resizeImage(event: MouseEvent, index: number, isTextField: boolean) {
     if (this.isResizing) {
-      const activeContainer = this.containers.find((container) => container.active);
-      if (activeContainer) {
-        const currentElementPosition = isTextField
-          ? activeContainer.textFieldPositions[index]
-          : activeContainer.imagePositions[index];
+      const currentElementPosition = isTextField
+        ? this.container.textFieldPositions[index]
+        : this.container.imagePositions[index];
 
-        // Calculate the new width and height based on the mouse's current position
-        const newWidth = this.draggedImagePosition.width + event.clientX - this.startX;
-        const newHeight = this.draggedImagePosition.height + event.clientY - this.startY;
 
-        // Update the width and height of the current ImagePosition
-        currentElementPosition.width = newWidth;
-        currentElementPosition.height = newHeight;
+      // Calculate the new width and height based on the mouse's current position
+      const newWidth = this.draggedImagePosition.width + event.clientX - this.startX;
+      const newHeight = this.draggedImagePosition.height + event.clientY - this.startY;
 
-        // Optionally, update the element's style for immediate visual feedback
-        const element = event.target as HTMLElement;
-        element.style.width = `${newWidth}px`;
-        element.style.height = `${newHeight}px`;
-      }
+      // Update the width and height of the current ImagePosition
+      currentElementPosition.width = newWidth;
+      currentElementPosition.height = newHeight;
+
+      // Optionally, update the element's style for immediate visual feedback
+      const element = event.target as HTMLElement;
+      element.style.width = `${newWidth}px`;
+      element.style.height = `${newHeight}px`;
     }
   }
 
@@ -90,34 +81,34 @@ export class ImageComponent {
     this.isResizing = false;
   }
 
-  async onDragEnded(event: CdkDragEnd, index: number) {
+  onDragEnded(event: CdkDragEnd, index: number) {
     const x = event.source._dragRef.getFreeDragPosition().x;
     const y = event.source._dragRef.getFreeDragPosition().y;
 
-    const activeContainer = this.containers.find((container) => container.active);
-    if (!activeContainer) return;
-
-    const currentImagePosition = activeContainer.imagePositions[index];
+    const currentImagePosition = this.container.imagePositions[index];
     if (!currentImagePosition) {
       return console.error('No image position found for this index: ', index);
     }
-  
-    activeContainer.imagePositions[index] = {
+
+    this.container.imagePositions[index] = {
       x, y,
       width: currentImagePosition.width,
       height: currentImagePosition.height
     };
-    await this.savePosition();
+    this.savePosition();
   }
 
+
   async savePosition() {
-    if (this.storyboardId) {
-      const storyboard = await this.storyBoardService.getStoryboard(this.storyboardId);
-      storyboard!.id = this.storyboardId;
-      storyboard!.containers = this.containers;
-      await this.storyBoardService.saveStoryboards([storyboard!]);
-    }
+    if (!this.storyboardId) return;
+
+    const storyboard = await this.storyBoardService.getStoryboard(this.storyboardId);
+    if (!storyboard) return;
+
+    storyboard.containers = this.containers;
+    await this.storyBoardService.saveStoryboards([storyboard]);
   }
+
   trackByFn(item: any) {
     return item.key;
   }

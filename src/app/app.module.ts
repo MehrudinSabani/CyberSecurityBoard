@@ -7,7 +7,6 @@ import { AppComponent } from './app.component';
 
 import {DragDropModule} from '@angular/cdk/drag-drop'; 
 
-
 // firebase init
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
@@ -20,28 +19,17 @@ import { provideFirestore,getFirestore } from '@angular/fire/firestore';
 import { provideStorage,getStorage } from '@angular/fire/storage';
 import { BoardComponent } from './board/board.component';
 import { UploadImageDetailsComponent } from './upload-image-details/upload-image-details.component';
-import { RouterModule, Routes } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SidebarComponent } from './board/sidebar/sidebar.component';
 import { TextFieldComponent } from './board/text-field/text-field.component';
 import { ImageComponent } from './board/image/image.component';
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { ExploreComponent } from './main-menu/explore/explore.component';
-import { CreateComponent } from './main-menu/create/create.component';
+import { HeaderComponent } from './header/header.component';
+import { SignupComponent } from './header/signup/signup.component';
+import { LoginComponent } from './header/login/login.component';
+import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 
-const routes: Routes = [
-  { path: '', component: MainMenuComponent}, 
-  { path: 'storyboard', component: BoardComponent},
-  { path: 'upload', component: UploadImageDetailsComponent}, 
-  { path: 'storyboard', component: MainMenuComponent},
-  { path: 'storyboard/edit/:id', component: BoardComponent},
-  { path: 'storyboard/explore', component: ExploreComponent}
-
-
- 
-
-
-]
 
 @NgModule({          
   declarations: [
@@ -53,7 +41,10 @@ const routes: Routes = [
     TextFieldComponent,
     MainMenuComponent,
     ExploreComponent,
-    CreateComponent,
+    HeaderComponent,
+    SignupComponent,
+    LoginComponent,
+    UserDashboardComponent,
   ],
   imports: [
     BrowserModule,
@@ -62,7 +53,6 @@ const routes: Routes = [
     ReactiveFormsModule,
     FormsModule,
 
-    RouterModule.forRoot(routes),
 
 
     // angular firebase integration

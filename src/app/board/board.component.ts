@@ -16,6 +16,11 @@ import { ActivatedRoute } from '@angular/router';
 
 export class BoardComponent implements OnInit {
 
+  // todo: add error handling for loading images from server
+  // todo: add a buffer icon until the story is fully loaded
+
+  // todo: add 
+
 
   @ViewChild('container') container!: ElementRef;
 
@@ -51,12 +56,7 @@ export class BoardComponent implements OnInit {
         // todo: this is bad error handling 
 
         // instead Show error message or redirect to another page
-
-        const newStoryboard: Storyboard = {
-          storyName: 'Defense Story',
-          containers: this.containers
-        };
-        await this.storyBoardService.saveStoryboards([newStoryboard]);
+        console.log("Storyboard could not be created")
       }
     }
 
@@ -121,56 +121,27 @@ export class BoardComponent implements OnInit {
   async onDrop(event: DragEvent) {
     event.preventDefault();
 
-    let offsetX = 0, offsetY = 0;
-
-    // this if statment allows to move the input field
-    if (event.dataTransfer) {
-      const id = event.dataTransfer.getData('text/plain');
-      offsetX = parseFloat(event.dataTransfer.getData('text/offset-x'));
-      offsetY = parseFloat(event.dataTransfer.getData('text/offset-y'));
-      const inputElement = document.getElementById(id);
-      if (inputElement) {
-        inputElement.style.left = `${event.clientX - offsetX}px`;
-        inputElement.style.top = `${event.clientY - offsetY}px`;
-
-        // Find the active container
-        const activeContainer = this.containers.find((container) => container.active);
-
-        // Update the textFieldPositions object
-        if (activeContainer && activeContainer.textFieldPositions[id]) {
-          activeContainer.textFieldPositions[id].x = event.clientX - offsetX;
-          activeContainer.textFieldPositions[id].y = event.clientY - offsetY;
-
-          // Get the storyboard id
-          const storyboardId = this.route.snapshot.paramMap.get('id');
-
-          // If the storyboard id exists, get the storyboard and update its containers
-          if (storyboardId) {
-            const storyboard = await this.storyBoardService.getStoryboard(storyboardId);
-            storyboard!.containers = this.containers;
-            await this.storyBoardService.saveStoryboards([storyboard!]);
-          }
-        }
-
-        return; // if an input field is dropped, return early to prevent dropping an image
-      }
-    }
-
+    let offsetX = 0, offsetY = 100;
+  
+    // ... existing code ...
+  
     const url = this.draggedImage;
     if (!url) return;
-
+  
     const activeContainer = this.containers.find((container) => container.active);
-
+  
     if (!activeContainer) return;
-
+  
     const containerElement = document.getElementById(activeContainer.id);
     if (!containerElement) return;
-
-    const x = event.clientX - containerElement.offsetLeft - offsetX;
-    const y = event.clientY - containerElement.offsetTop - offsetY;
-
+  
+    const containerRect = containerElement.getBoundingClientRect();
+  
+    const x = event.clientX - containerRect.left - offsetX;
+    const y = event.clientY - containerRect.top - offsetY;
+  
     const newIndex = Object.keys(activeContainer.images).length.toString();
-
+  
     activeContainer.images[newIndex] = url;
     // Set the dimensions to the stored values
     activeContainer.imagePositions[newIndex] = {
@@ -208,14 +179,19 @@ export class BoardComponent implements OnInit {
   updateImagePositions() {
     this.containers.forEach((container, containerIndex) => {
       if (!container.active) return;
-
+  
+      const containerElement = document.getElementById(container.id);
+      if (!containerElement) return;
+  
+      const containerRect = containerElement.getBoundingClientRect();
+  
       Object.entries(container.imagePositions).forEach(([index, position]) => {
         const imageElement = document.getElementById(`image${containerIndex}_${index}`);
         if (!imageElement || typeof position !== 'object' || position === null) return;
-
+  
         const pos = position as ImagePosition;
-        imageElement.style.left = `${pos.x}px`;
-        imageElement.style.top = `${pos.y}px`;
+        imageElement.style.left = `${containerRect.left + pos.x}px`;
+        imageElement.style.top = `${containerRect.top + pos.y}px`;
         imageElement.style.width = `${pos.width}px`;
         imageElement.style.height = `${pos.height}px`;
       });
@@ -271,5 +247,19 @@ export class BoardComponent implements OnInit {
     }
   }
 
+
+  // todo replace the repetitive code with this helper function
+  async handleStoryboardOperations(storyboardId: string, containers: Container[]) {
+    if (storyboardId) {
+      const storyboard = await this.storyBoardService.getStoryboard(storyboardId);
+      storyboard!.id = storyboardId;
+      storyboard!.containers = containers;
+      await this.storyBoardService.saveStoryboards([storyboard!]);
+      this.updateElementPositions();
+    }
+  }
+  
+  
+  
 
 }

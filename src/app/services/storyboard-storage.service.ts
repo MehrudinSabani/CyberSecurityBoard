@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Firestore, addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
 import { Container } from '../interfaces/container';
 import { Storyboard } from '../interfaces/story-board';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StoryBoardService {
-  constructor(private firestore: Firestore) { }
+  constructor(private firestore: Firestore, private authService: AuthenticationService) { }
 
   // new
 
@@ -69,7 +70,7 @@ export class StoryBoardService {
         const textFieldPositionsArray = Object.entries(containerData.textFieldPositions).map(([key, value]) => ({ key, value }));
       
         const images = imagesArray.reduce((acc: { [key: string]: string }, obj: any) => {
-          acc[obj.key] = obj.value.value[0];  // Access the first element of the value array
+          acc[obj.key] = obj.value.value;  // Access the first element of the value array
           return acc;
         }, {});
       
@@ -114,19 +115,48 @@ export class StoryBoardService {
   }
   
   
+  async getAllStoryboardsByUserId(userId: string): Promise<Storyboard[] | null> {
+    
+    const storyboardsRef = collection(this.firestore, 'storyboards');
+    const storyboardDocs = await getDocs(query(storyboardsRef, where("userId", "==", userId)));
 
+    if (!storyboardDocs.empty) {
+      let storyboards: Storyboard[] = [];
+      storyboardDocs.forEach((doc) => {
+        const storyboardData = doc.data();
+        storyboards.push({
+          id: doc.id, 
+          userName: storyboardData['userName'],
+          storyName: storyboardData['storyName'],
+          storyTopic: storyboardData['storyTopic'],
+  
+          containers: storyboardData['containers'],
+        });
+      });
+      return storyboards;
+    } else {
+      return null;
+    }
+  }
+  
 
   async getAllStoryboards(): Promise<Storyboard[] | null> {
     const storyboardsRef = collection(this.firestore, 'storyboards');
     const storyboardDocs = await getDocs(storyboardsRef);
   
+    const userId = await this.authService.getCurrentUserId();
+
     if (!storyboardDocs.empty) {
       let storyboards: Storyboard[] = [];
       storyboardDocs.forEach((doc) => {
         const storyboardData = doc.data();
         storyboards.push({
           id: doc.id, // include the ID in the returned data
+          userName: storyboardData['userName'],
+          // userId: userId,
           storyName: storyboardData['storyName'],
+          storyTopic: storyboardData['storyTopic'],
+  
           containers: storyboardData['containers'],
         });
       });

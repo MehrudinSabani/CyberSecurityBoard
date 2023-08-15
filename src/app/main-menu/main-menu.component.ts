@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { Storyboard } from '../interfaces/story-board';
 import {  StoryBoardService } from '../services/storyboard-storage.service';
 import { Router } from '@angular/router';
+import { NgForm } from '@angular/forms';
+import { AuthenticationService } from '../authentication/authentication.service';
 
 @Component({
   selector: 'app-main-menu',
@@ -15,34 +17,41 @@ export class MainMenuComponent {
 
   constructor(
     private storyboardStorageService: StoryBoardService,
-    private router: Router){}
+    private router: Router,
+    private authService: AuthenticationService,
+    ){}
 
+    async createStoryboard(addForm: NgForm) {
+      const userId = await this.authService.getCurrentUserId();
+      const userName: any = await this.authService.getCurrentUsername();
 
-    createStoryboard() {
-      // const placeholderContainer: Container = {
-      //   id: 'placeholder',
-      //   active: false,
-      //   images: {},
-      //   imagePositions: { },
-      //   textFields: {  },
-      //   textFieldPositions: { },
-      // };
-    
       const newStoryboard: Storyboard = {
-        storyName: 'Defense',
+        storyName: addForm.value.storyName,
+        storyTopic: addForm.value.storyTopic,
+        // todo
+        userName: userName,
+        userId: userId,
         containers: []
-
-        // containers: [placeholderContainer],
       };
       
       this.storyboards.push(newStoryboard);
       this.storyboardStorageService.saveStoryboards(this.storyboards)
       .then((savedStoryboards) => {
         const newStoryboard = savedStoryboards[savedStoryboards.length - 1];
-        // console.log(newStoryboard.id);
         this.router.navigate([`/storyboard/edit/${newStoryboard.id}`]);
       });
-    }
     
+      // Close the modal and reset the form
+      document.getElementById('add-storyboard-form')?.click();
+      addForm.reset();
+    }
 
+
+    checkLoggedInStatus(){
+      if (!this.authService.userLoggedIn) {
+        alert('In order to create a storyboard you have to be logged in');
+        this.router.navigate([`/login`]);
+        // return;
+      }
+    }
 }
