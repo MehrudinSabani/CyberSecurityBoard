@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { Storyboard } from '../interfaces/story-board';
-import {  StoryBoardService } from '../services/storyboard-storage.service';
+import { StoryBoardService } from '../services/storyboard-storage.service';
 import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { AuthenticationService } from '../authentication/authentication.service';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { StoryboardFormComponent } from './storyboard-form/storyboard-form.component';
 
 @Component({
   selector: 'app-main-menu',
@@ -13,45 +15,26 @@ import { AuthenticationService } from '../authentication/authentication.service'
 export class MainMenuComponent {
 
 
-  storyboards: Storyboard[] = [];
 
   constructor(
-    private storyboardStorageService: StoryBoardService,
     private router: Router,
     private authService: AuthenticationService,
-    ){}
+    public dialog: MatDialog,
+  ) { }
 
-    async createStoryboard(addForm: NgForm) {
-      const userId = await this.authService.getCurrentUserId();
-      const userName: any = await this.authService.getCurrentUsername();
+  openDialog() {
+    if (!this.authService.userLoggedIn) {
+      alert('In order to create a storyboard you have to be logged in');
+      this.router.navigate([`/login`]);
+      return;
+    }
+    else {
+      const dialogRef = this.dialog.open(StoryboardFormComponent);
 
-      const newStoryboard: Storyboard = {
-        storyName: addForm.value.storyName,
-        storyTopic: addForm.value.storyTopic,
-        // todo
-        userName: userName,
-        userId: userId,
-        containers: []
-      };
-      
-      this.storyboards.push(newStoryboard);
-      this.storyboardStorageService.saveStoryboards(this.storyboards)
-      .then((savedStoryboards) => {
-        const newStoryboard = savedStoryboards[savedStoryboards.length - 1];
-        this.router.navigate([`/storyboard/edit/${newStoryboard.id}`]);
+      dialogRef.afterClosed().subscribe(result => {
+        console.log(`Dialog result: ${result}`);
       });
-    
-      // Close the modal and reset the form
-      document.getElementById('add-storyboard-form')?.click();
-      addForm.reset();
     }
-
-
-    checkLoggedInStatus(){
-      if (!this.authService.userLoggedIn) {
-        alert('In order to create a storyboard you have to be logged in');
-        this.router.navigate([`/login`]);
-        // return;
-      }
-    }
+  }
 }
+

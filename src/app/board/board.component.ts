@@ -189,6 +189,12 @@ export class BoardComponent implements OnInit {
     })
   }
 
+
+
+
+
+  
+
   updateElementPositions() {
 
     this.updateImagePositions();

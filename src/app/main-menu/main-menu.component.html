@@ -4,70 +4,7 @@
 
 <div class="menuNav">
     <button class="explore" routerLink="storyboard/explore">Explore</button>
-
-    <!-- <div class="create" routerLink="storyboard/create"> Create a Storyboard </div> -->
-
-
-
-    <button type="button" class="create" data-toggle="modal" data-target="#addStoryboardModal" (click)="checkLoggedInStatus()">Create Storyboard</button>
-
-
-    <!-- Modal -->
-    <div class="modal fade" id="addStoryboardModal" tabindex="-1" role="dialog"
-        aria-labelledby="addStoryboardModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addStoryboardModalLabel">Create a new Storyboard</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form #addForm="ngForm" (ngSubmit)="createStoryboard(addForm)">
-                        <table>
-                            <tbody>
-
-                                <tr>
-                                    Storyboard Name
-                                    <td>
-                                        <input type="text" ngModel name="storyName" required
-                                            placeholder="example: Email fishing" />
-                                        <!-- <div *ngIf="addForm.controls['storyName'].invalid && (addForm.controls['storyName'].dirty || addForm.controls['storyName'].touched)"
-                                            class="alert alert-danger">
-                                            StoryName is required.
-                                        </div> -->
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    Storyboard Topic
-                                    <td>
-                                        <select name="storyTopic" ngModel required>
-                                            <option type="text">Human Engeeniring </option>
-                                        </select>
-                                        <!-- <div *ngIf="addForm.controls['storyTopic'].invalid && (addForm.controls['storyTopic'].dirty || addForm.controls['storyTopic'].touched)"
-                                            class="alert alert-danger">
-                                            StoryTopic is required.
-                                        </div> -->
-                                    </td>
-                                </tr>
-
-
-                            </tbody>
-                        </table>
-
-
-                        <div class="modal-footer">
-                            <button type="button" id="add-storyboard-form" class="btn btn-secondary"
-                                data-dismiss="modal">Close</button>
-                            <button [disabled]="addForm.invalid" type="submit" class="btn btn-primary"> Create
-                                Storyboard </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    <button type="button" class="create" (click)="openDialog()">Create Storyboard</button>
 
 </div>
+

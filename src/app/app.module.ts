@@ -29,6 +29,13 @@ import { HeaderComponent } from './header/header.component';
 import { SignupComponent } from './header/signup/signup.component';
 import { LoginComponent } from './header/login/login.component';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatIconModule } from '@angular/material/icon';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatDialogModule} from '@angular/material/dialog';
+import { StoryboardFormComponent } from './main-menu/storyboard-form/storyboard-form.component';
+
 
 
 @NgModule({          
@@ -45,14 +52,21 @@ import { UserDashboardComponent } from './user-dashboard/user-dashboard.componen
     SignupComponent,
     LoginComponent,
     UserDashboardComponent,
+    StoryboardFormComponent,
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     DragDropModule,
     ReactiveFormsModule,
     FormsModule,
 
+    // material modules
+    MatSidenavModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatDialogModule,
 
 
     // angular firebase integration
@@ -63,7 +77,8 @@ import { UserDashboardComponent } from './user-dashboard/user-dashboard.componen
     provideAnalytics(() => getAnalytics()),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
-    provideStorage(() => getStorage())
+    provideStorage(() => getStorage()),
+    
   ],
   providers: [],
   bootstrap: [AppComponent]

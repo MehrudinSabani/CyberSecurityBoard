@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AuthenticationService } from '../authentication/authentication.service';
-
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -13,6 +12,7 @@ export class HeaderComponent {
   
   uuid: string;
   username: string | null;
+
 
 
   constructor(public afAuth: AngularFireAuth, private authService: AuthenticationService) { }
@@ -37,5 +37,14 @@ async getUserName(){
   this.username = await this.authService.getCurrentUsername();
 }
 
+
+
+
+collapse = false;
+
+
+toggleSidebar() {
+  this.collapse = !this.collapse;
+}
 
 }
