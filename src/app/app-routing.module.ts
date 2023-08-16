@@ -8,6 +8,7 @@ import { LoginComponent } from './header/login/login.component';
 import { SignupComponent } from './header/signup/signup.component';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 import { AuthGuard } from './authentication/auth.guard';
+import { ViewStoryboardComponent } from './board/view-storyboard/view-storyboard.component';
 
 
 const routes: Routes = [
@@ -20,6 +21,8 @@ const routes: Routes = [
   { path: 'upload', component: UploadImageDetailsComponent}, 
   { path: 'storyboard', component: MainMenuComponent},
   { path: 'storyboard/edit/:id', component: BoardComponent, canActivate : [AuthGuard]},
+  { path: 'storyboard/view/:id', component: ViewStoryboardComponent},
+
   { path: 'storyboard/explore', component: ExploreComponent}
 
 ]

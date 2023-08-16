@@ -2,12 +2,7 @@ import { StoryBoardService } from '../services/storyboard-storage.service';
 import { ImagePosition } from '../interfaces/image-position';
 import { Container } from '../interfaces/container';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Storyboard } from '../interfaces/story-board';
 import { ActivatedRoute } from '@angular/router';
-import { CdkDragMove } from '@angular/cdk/drag-drop';
-
-
-
 
 @Component({
   selector: 'app-board',
@@ -20,8 +15,6 @@ export class BoardComponent implements OnInit {
   // todo: add a buffer icon until the story is fully loaded
 
   @ViewChild('container') container!: ElementRef;
-
-  // activeContainer: Container;  // Add this line
 
   storyboardName: string;
   storyId: string;
@@ -115,19 +108,19 @@ export class BoardComponent implements OnInit {
 
     const url = this.draggedImage;
     if (!url) return;
-  
+
     const activeContainer = this.containers.find((container) => container.active);
-  
+
     if (!activeContainer) return;
-  
+
     const containerElement = document.getElementById(activeContainer.id);
     if (!containerElement) return;
-  
+
     const x = event.offsetX;
     const y = event.offsetY;
-  
+
     const newIndex = Object.keys(activeContainer.images).length.toString();
-  
+
     activeContainer.images[newIndex] = url;
     // Set the dimensions to the stored values
     activeContainer.imagePositions[newIndex] = {
@@ -145,24 +138,19 @@ export class BoardComponent implements OnInit {
       // Get the storyboard id
       const storyboardId = this.route.snapshot.paramMap.get('id');
 
-      // If the storyboard id exists, get the storyboard and update its containers
-      if (storyboardId) {
-        const storyboard = await this.storyBoardService.getStoryboard(storyboardId);
-        storyboard!.id = storyboardId;
-        storyboard!.containers = this.containers;
-        await this.storyBoardService.saveStoryboards([storyboard!]);
-      }
+      this.handleStoryboardOperations(storyboardId!, this.containers);
+
     }
   }
 
   updateImagePositions() {
     this.containers.forEach((container, containerIndex) => {
       if (!container.active) return;
-    
+
       Object.entries(container.imagePositions).forEach(([index, position]) => {
         const imageElement = document.getElementById(`image${containerIndex}_${index}`);
         if (!imageElement || typeof position !== 'object' || position === null) return;
-  
+
         const pos = position as ImagePosition;
         imageElement.style.left = `${pos.x}px`;
         imageElement.style.top = `${pos.y}px`;
@@ -188,13 +176,6 @@ export class BoardComponent implements OnInit {
       });
     })
   }
-
-
-
-
-
-  
-
   updateElementPositions() {
 
     this.updateImagePositions();
@@ -225,13 +206,7 @@ export class BoardComponent implements OnInit {
     // Get the storyboard id
     const storyboardId = this.route.snapshot.paramMap.get('id');
 
-    // If the storyboard id exists, get the storyboard and update its containers
-    if (storyboardId) {
-      const storyboard = await this.storyBoardService.getStoryboard(storyboardId);
-      storyboard!.id = storyboardId;
-      storyboard!.containers = this.containers;
-      await this.storyBoardService.saveStoryboards([storyboard!]);
-    }
+    this.handleStoryboardOperations(storyboardId!, this.containers);
   }
 
 

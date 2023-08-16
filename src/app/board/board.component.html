@@ -5,7 +5,7 @@
         <div [id]="'innerContainer' + containerIndex" class="container" (dragover)="onDragOver($event)"
           (drop)="onDrop($event)">
 
-          <app-image [storyboardId]="storyId" [isResizing]="isResizing" [startX]="startX" [startY]="startY"
+          <app-image  [storyboardId]="storyId" [isResizing]="isResizing" [startX]="startX" [startY]="startY"
             [draggedImagePosition]="draggedImagePosition" [containers]="containers" [container]="container"
             [containerIndex]="containerIndex">
 

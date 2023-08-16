@@ -35,6 +35,9 @@ import { MatIconModule } from '@angular/material/icon';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { MatDialogModule} from '@angular/material/dialog';
 import { StoryboardFormComponent } from './main-menu/storyboard-form/storyboard-form.component';
+import { ViewStoryboardComponent } from './board/view-storyboard/view-storyboard.component';
+import { EditStoryboardComponent } from './board/edit-storyboard/edit-storyboard.component';
+import { FullScreenComponent } from './board/view-storyboard/full-screen/full-screen.component';
 
 
 
@@ -53,6 +56,9 @@ import { StoryboardFormComponent } from './main-menu/storyboard-form/storyboard-
     LoginComponent,
     UserDashboardComponent,
     StoryboardFormComponent,
+    ViewStoryboardComponent,
+    EditStoryboardComponent,
+    FullScreenComponent,
   ],
   imports: [
     BrowserModule,

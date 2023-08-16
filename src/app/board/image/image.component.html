@@ -1,6 +1,5 @@
-<img *ngFor="let image of container.images | keyvalue; let i = index; trackBy: trackByFn"
+<img class="edit-image" *ngFor="let image of container.images | keyvalue; let i = index; trackBy: trackByFn"
             [id]="'image' + containerIndex + '_' + image.key" [src]="image.value" cdkDrag cdkDragBoundary=".container"
             (mousedown)="startResize($event, i, false)" (mousemove)="resizeImage($event, i, false)"
             (mouseup)="endResize()" [style.width]="container.imagePositions[i].width + 'px'"
-            [style.height]="container.imagePositions[i].height + 'px'" (cdkDragEnded)="onDragEnded($event, i)"
-            style="position: absolute;">
+            (cdkDragEnded)="onDragEnded($event, i)">
