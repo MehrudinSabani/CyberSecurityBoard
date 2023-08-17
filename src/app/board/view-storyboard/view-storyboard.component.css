@@ -6,14 +6,6 @@
     flex-wrap: wrap;
 }
 
-.container {
-    width: 1350px;
-    height: 680px;
-    padding: 0;
-    border: 1px solid black;
-    flex: 1 0 calc(100% - 120px);
-    background-color: white;
-}
 
 .storyboardNav {
     display: block;
@@ -21,22 +13,6 @@
     margin-top: 690px;
 }
 
-.view-image {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-}
-
-textarea {
-    width: 100%;
-    height: 100%;
-    resize: none;
-    user-select: none;
-    cursor: default;
-    border: none;
-    outline: none;
-    padding: 0;
-}
 
 .storyboardNav button {}
 

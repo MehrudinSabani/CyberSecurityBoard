@@ -11,7 +11,7 @@ import { StoryBoardService } from 'src/app/services/storyboard-storage.service';
 })
 export class ViewStoryboardComponent {
   @ViewChild('container') container!: ElementRef;
-  @ViewChild('fullscreenContainer') fullscreenContainer: ElementRef;
+  // @ViewChild('fullscreen') fullscreenContainer: ElementRef;
 
   activeContainerIndex: number = 0; // Initialize the active container index
 
@@ -50,23 +50,23 @@ export class ViewStoryboardComponent {
 
 
   // fullscreen and navigation functions
-  toggleFullscreen() {
-    if (!document.fullscreenElement) {
-      this.openFullscreen(this.fullscreenContainer.nativeElement);
-    }
-  }
+  // toggleFullscreen() {
+  //   if (!document.fullscreenElement) {
+  //     this.openFullscreen(this.fullscreenContainer.nativeElement);
+  //   }
+  // }
 
-  openFullscreen(element: any) {
-    if (element.requestFullscreen) {
-      element.requestFullscreen();
-    } else if (element.mozRequestFullScreen) { // Firefox
-      element.mozRequestFullScreen();
-    } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
-      element.webkitRequestFullscreen();
-    } else if (element.msRequestFullscreen) { // IE/Edge
-      element.msRequestFullscreen();
-    }
-  }
+  // openFullscreen(element: any) {
+  //   if (element.requestFullscreen) {
+  //     element.requestFullscreen();
+  //   } else if (element.mozRequestFullScreen) { // Firefox
+  //     element.mozRequestFullScreen();
+  //   } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
+  //     element.webkitRequestFullscreen();
+  //   } else if (element.msRequestFullscreen) { // IE/Edge
+  //     element.msRequestFullscreen();
+  //   }
+  // }
 
 
   @HostListener('document:keydown', ['$event'])

@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { Container } from 'src/app/interfaces/container';
 
 @Component({
@@ -8,12 +8,30 @@ import { Container } from 'src/app/interfaces/container';
 })
 export class FullScreenComponent {
 
+  @ViewChild('fullscreen') fullscreenContainer: ElementRef;
 
 
   @Input() container!: Container; // Input property to receive the container data
-    @Input() containerIndex!: number; // Input property to receive the container index
-    @Input() fullscreenContainer!: ElementRef; // Input property to receive the fullscreenContainer reference
+  @Input() containerIndex!: number; // Input property to receive the container index
 
 
 
+  toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      this.openFullscreen(this.fullscreenContainer.nativeElement);
+      console.log("fullscreen")
+    }
+  }
+
+  openFullscreen(element: any) {
+    if (element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if (element.mozRequestFullScreen) { // Firefox
+      element.mozRequestFullScreen();
+    } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
+      element.webkitRequestFullscreen();
+    } else if (element.msRequestFullscreen) { // IE/Edge
+      element.msRequestFullscreen();
+    }
+  }
 }

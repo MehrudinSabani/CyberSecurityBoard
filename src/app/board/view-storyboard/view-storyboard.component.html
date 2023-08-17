@@ -2,15 +2,13 @@
 <div class="storyBoard">
     <div *ngFor="let container of containers; let containerIndex = index" [id]="'container' + containerIndex">
         <div *ngIf="container.active">
-            <!-- 
+            
             <app-full-screen 
-            *ngIf="fullscreen"
             [container]="container"
-            [containerIndex]="containerIndex"
-            [fullscreenContainer]="fullscreenContainer">
-            </app-full-screen> -->
+            [containerIndex]="containerIndex">
+            </app-full-screen>
 
-            <div [id]="'innerContainer' + containerIndex" class="container" #fullscreenContainer>
+            <!-- <div [id]="'innerContainer' + containerIndex" class="container" #fullscreen>
 
                 <img class="view-image" *ngFor="let image of container.images | keyvalue; let i = index;"
                     [id]="'image' + containerIndex + '_' + image.key" [src]="image.value"
@@ -27,15 +25,15 @@
                     [style.top]="container.textFieldPositions[textField.key].y + 'px'" style="position: absolute">
                     <textarea readonly [(ngModel)]="container.textFields[textField.key]"></textarea>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 
-    <div class="storyboardNav" *ngIf="!fullscreen">
+    <div class="storyboardNav">
         <button *ngFor="let container of containers; let i = index" (click)="navigateToContainer(i)"
             [ngClass]="{ 'active': i === activeContainerIndex }">
             {{ i + 1 }}
         </button>
-        <button (click)="toggleFullscreen()">Toggle Fullscreen</button>
+        <!-- <button (click)="toggleFullscreen()">Toggle Fullscreen</button> -->
     </div>
 </div>

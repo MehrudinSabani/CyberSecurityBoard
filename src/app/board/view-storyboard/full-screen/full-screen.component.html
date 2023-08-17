@@ -1,24 +1,23 @@
-<div class="fullscreen-modal">
-    <div class="content">
-        <div [id]="'innerContainer' + containerIndex" class="container" #fullscreenContainer>
+<div [id]="'innerContainer' + containerIndex" class="container" #fullscreen>
 
-            <img class="view-image" *ngFor="let image of container.images | keyvalue; let i = index;"
-                [id]="'image' + containerIndex + '_' + image.key" [src]="image.value"
-                [style.width]="container.imagePositions[image.key].width + 'px'"
-                [style.height]="container.imagePositions[image.key].height + 'px'"
-                [style.left]="container.imagePositions[image.key].x + 'px'"
-                [style.top]="container.imagePositions[image.key].y + 'px'">
+    <img class="view-image" *ngFor="let image of container.images | keyvalue; let i = index;"
+        [id]="'image' + containerIndex + '_' + image.key" [src]="image.value"
+        [style.width]="container.imagePositions[image.key].width + 'px'"
+        [style.height]="container.imagePositions[image.key].height + 'px'"
+        [style.left]="container.imagePositions[image.key].x + 'px'"
+        [style.top]="container.imagePositions[image.key].y + 'px'">
 
 
-            <div *ngFor="let textField of container.textFields | keyvalue; let j = index;"
-                [id]="'textField' + containerIndex + '_' + textField.key"
-                [style.width]="container.textFieldPositions[textField.key].width + 'px'"
-                [style.height]="container.textFieldPositions[textField.key].height + 'px'"
-                [style.left]="container.textFieldPositions[textField.key].x + 'px'"
-                [style.top]="container.textFieldPositions[textField.key].y + 'px'" style="position: absolute">
-                <textarea readonly [(ngModel)]="container.textFields[textField.key]"></textarea>
+    <div *ngFor="let textField of container.textFields | keyvalue; let j = index;"
+        [id]="'textField' + containerIndex + '_' + textField.key"
+        [style.width]="container.textFieldPositions[textField.key].width + 'px'"
+        [style.height]="container.textFieldPositions[textField.key].height + 'px'"
+        [style.left]="container.textFieldPositions[textField.key].x + 'px'"
+        [style.top]="container.textFieldPositions[textField.key].y + 'px'" style="position: absolute">
+        <textarea readonly [(ngModel)]="container.textFields[textField.key]"></textarea>
 
-            </div>
-        </div>
     </div>
+
 </div>
+
+        <button (click)="toggleFullscreen()">Toggle Fullscreen</button>

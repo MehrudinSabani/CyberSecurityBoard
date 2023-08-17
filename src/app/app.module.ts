@@ -58,8 +58,8 @@ import { FullScreenComponent } from './board/view-storyboard/full-screen/full-sc
     StoryboardFormComponent,
     ViewStoryboardComponent,
     EditStoryboardComponent,
-    FullScreenComponent,
-  ],
+    FullScreenComponent
+    ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
