@@ -7,12 +7,21 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
-  styleUrls: ['./board.component.css']
+  styleUrls: ['./board.component.css'],
+
 })
+
+
+
 
 export class BoardComponent implements OnInit {
 
+  containerPaths: string[] = ['default']; // Initialize with default pathId
+
+
+
   // todo: add a buffer icon until the story is fully loaded
+  // todo: save storyboards only once, with a button "save and publish"
 
   @ViewChild('container') container!: ElementRef;
 
@@ -36,6 +45,9 @@ export class BoardComponent implements OnInit {
     if (this.storyId) {
       const storyboard = await this.storyBoardService.getStoryboard(this.storyId);
 
+      this.containers = storyboard!.containers;
+      this.containerPaths = Array.from(new Set(this.containers.map((container) => container.pathId!)));
+
       console.log('storyboard', storyboard?.containers);
 
       if (storyboard) {
@@ -51,28 +63,7 @@ export class BoardComponent implements OnInit {
 
   }
 
-  // this is responsible for dropping from sidebar
-  handleDragStartEvent(eventData: { event: DragEvent; image: string }) {
-    this.draggedImage = eventData.image;
 
-    const activeContainer = this.containers.find((container) => container.active);
-    if (activeContainer) {
-      // Iterate over the keys
-      const imageKey = Object.keys(activeContainer.images)
-        .find(key => activeContainer.images[key] === this.draggedImage);
-      if (imageKey) {
-        // Get the image position using the key
-        const imagePosition = activeContainer.imagePositions[imageKey];
-        // Store the current dimensions of the image
-        this.draggedImagePosition = {
-          x: eventData.event.clientX,
-          y: eventData.event.clientY,
-          width: imagePosition.width,
-          height: imagePosition.height
-        };
-      }
-    }
-  }
 
   async addContainer() {
     this.containers.forEach((container) => (container.active = false));
@@ -82,25 +73,68 @@ export class BoardComponent implements OnInit {
       images: {},
       imagePositions: {},
       textFields: {},
-      textFieldPositions: {}
+      textFieldPositions: {},
+      pathId: 'default' // Assign default pathId
     };
     this.containers.push(newContainer);
 
     const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
-    storyboard!.id = this.storyId!;  // Set the id of the storyboard
-    // this is cruicial for updating the existing storyboard, without this new sb gets generated with a different id
+    storyboard!.id = this.storyId!;
     storyboard!.containers = this.containers;
     await this.storyBoardService.saveStoryboards([storyboard!]);
   }
 
 
+
   async activateContainer(index: number) {
+
     this.containers.forEach((container, i) => (container.active = i === index));
     this.updateElementPositions();
   }
 
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
+  async splitStoryPath(n: number) {
+    const activeContainer = this.containers.find((container) => container.active);
+    if (!activeContainer) return;
+
+    // Get the index of the active container
+    const activeIndex = this.containers.indexOf(activeContainer);
+
+    // Generate the pathId for the new containers
+    const pathIds = [];
+    for (let i = 0; i < n; i++) {
+      const pathId = String.fromCharCode(97 + i); // Generate pathId as a, b, c, ...
+      pathIds.push(pathId);
+    }
+
+    // Create new containers with the respective pathIds
+    for (let i = 0; i < n; i++) {
+      const newContainer: Container = {
+        id: `container${this.containers.length + i}`,
+        active: false,
+        images: {},
+        imagePositions: {},
+        textFields: {},
+        textFieldPositions: {},
+        pathId: pathIds[i]
+      };
+      this.containers.splice(activeIndex + i + 1, 0, newContainer);
+    }
+
+    const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
+    storyboard!.id = this.storyId!;
+    storyboard!.containers = this.containers;
+    await this.storyBoardService.saveStoryboards([storyboard!]);
+
+    // Update the containerPaths array
+    this.containerPaths = Array.from(new Set(this.containers.map((container) => container.pathId!)));
+  }
+
+  splitStoryPathPrompt() {
+    const userInput = prompt('Enter the number of paths to split');
+    const numberOfPaths = parseInt(userInput!, 10);
+    if (!isNaN(numberOfPaths)) {
+      this.splitStoryPath(numberOfPaths);
+    }
   }
 
   async onDrop(event: DragEvent) {
@@ -180,9 +214,7 @@ export class BoardComponent implements OnInit {
 
     this.updateImagePositions();
     this.updateTextFieldPositions();
-
   }
-
 
   // adding text
   async addTextField() {
@@ -210,6 +242,35 @@ export class BoardComponent implements OnInit {
   }
 
 
+
+
+// sidebar menu functions
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+  }
+  // this is responsible for dropping from sidebar
+  handleDragStartEvent(eventData: { event: DragEvent; image: string }) {
+    this.draggedImage = eventData.image;
+
+    const activeContainer = this.containers.find((container) => container.active);
+    if (activeContainer) {
+      // Iterate over the keys
+      const imageKey = Object.keys(activeContainer.images)
+        .find(key => activeContainer.images[key] === this.draggedImage);
+      if (imageKey) {
+        // Get the image position using the key
+        const imagePosition = activeContainer.imagePositions[imageKey];
+        // Store the current dimensions of the image
+        this.draggedImagePosition = {
+          x: eventData.event.clientX,
+          y: eventData.event.clientY,
+          width: imagePosition.width,
+          height: imagePosition.height
+        };
+      }
+    }
+  }
+  
   // todo replace the repetitive code with this helper function
   async handleStoryboardOperations(storyboardId: string, containers: Container[]) {
     if (storyboardId) {
@@ -220,4 +281,5 @@ export class BoardComponent implements OnInit {
       this.updateElementPositions();
     }
   }
+
 }

@@ -38,6 +38,7 @@ import { StoryboardFormComponent } from './main-menu/storyboard-form/storyboard-
 import { ViewStoryboardComponent } from './board/view-storyboard/view-storyboard.component';
 import { EditStoryboardComponent } from './board/edit-storyboard/edit-storyboard.component';
 import { FullScreenComponent } from './board/view-storyboard/full-screen/full-screen.component';
+import { FilterByPathIdPipe } from './board/filter-by-path-id.pipe';
 
 
 
@@ -58,7 +59,8 @@ import { FullScreenComponent } from './board/view-storyboard/full-screen/full-sc
     StoryboardFormComponent,
     ViewStoryboardComponent,
     EditStoryboardComponent,
-    FullScreenComponent
+    FullScreenComponent,
+    FilterByPathIdPipe
     ],
   imports: [
     BrowserModule,

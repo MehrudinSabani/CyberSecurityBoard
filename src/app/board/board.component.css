@@ -67,30 +67,8 @@ img{
 }
 
 
-
-
-/* use this as an alternative to set style directly from firebase data */
-/* 
-.container {
+.path-row {
   display: flex;
-  flex-wrap: wrap;
-  position: relative;
+  flex-direction: row;
 }
 
-img {
-  position: absolute;
-  width: 130px;
-  height: 130px;
-}
-
-img:nth-child(1) {
-  top: 0;
-  left: 0;
-}
-
-img:nth-child(2) {
-  top: 0;
-  left: 140px;
-} */
-
-/* Add more rules for each additional image */
