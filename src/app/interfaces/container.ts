@@ -8,4 +8,6 @@ export interface Container {
   textFields: { [key: string]: string };
   textFieldPositions: { [key: string]: ImagePosition };
   pathId: string;
+  rowIndex?: number;  
+
 }

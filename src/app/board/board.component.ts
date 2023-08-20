@@ -56,7 +56,6 @@ export class BoardComponent implements OnInit {
 
     this.rows = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
-
   }
 
   groupContainers() {
@@ -83,6 +82,7 @@ export class BoardComponent implements OnInit {
     return this.containers.filter(c => c.pathId.startsWith(letter));
   }
 
+  // todo:add a plus symbol in the middle and triger this function only once
   async addContainer() {
     this.containers.forEach((container) => (container.active = false));
     const newContainer: Container = {
@@ -92,54 +92,42 @@ export class BoardComponent implements OnInit {
       imagePositions: {},
       textFields: {},
       textFieldPositions: {},
-      pathId: 'path' // Assign default pathId
+      pathId: 'path',
+      rowIndex: 0,
     };
     this.containers.push(newContainer);
-
+  
     const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
     storyboard!.id = this.storyId!;
     storyboard!.containers = this.containers;
     await this.storyBoardService.saveStoryboards([storyboard!]);
   }
-
-
+  
 
   async activateContainer(container: Container) {
     this.containers.forEach((c) => (c.active = c === container));
     this.updateElementPositions();
   }
-  
 
-  async splitStoryPath(n: number) {
+  async continueStoryPath() {
+    this.containers.forEach((container) => (container.active = false));
+  
     const activeContainer = this.containers.find((container) => container.active);
     if (!activeContainer) return;
   
-    const activeIndex = this.containers.indexOf(activeContainer);
+    const previousId: any = await this.splitStoryPath(parseInt(activeContainer.id));
+    const newId = previousId + 1;
   
-    // Generate the pathId for the new containers
-    const pathIds = [];
-    for (let i = 0; i < n; i++) {
-      const pathId = activeContainer.pathId + String.fromCharCode(97 + i); // Append new pathId to existing pathId
-      pathIds.push(pathId);
-    }
-  
-    const newContainers = [];
-    // Create new containers with the respective pathIds
-    for (let i = 0; i < n; i++) {
-      const newContainer: Container = {
-        id: `container${this.containers.length + i}`, // Use a separate counter here
-        active: false,
-        images: {},
-        imagePositions: {},
-        textFields: {},
-        textFieldPositions: {},
-        pathId: pathIds[i],
-      };
-      newContainers.push(newContainer);
-    }
-  
-    // Insert new containers at the correct index
-    this.containers.splice(activeIndex + 1, 0, ...newContainers);
+    const newContainer: Container = {
+      id: `container${newId}`,
+      active: true,
+      images: {},
+      imagePositions: {},
+      textFields: {},
+      textFieldPositions: {},
+      pathId: activeContainer.pathId,
+    };
+    this.containers.push(newContainer);
   
     const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
     storyboard!.id = this.storyId!;
@@ -147,6 +135,29 @@ export class BoardComponent implements OnInit {
     await this.storyBoardService.saveStoryboards([storyboard!]);
   }
   
+async splitStoryPath(n: number) {
+  const activeContainer = this.containers.find(container => container.active);
+  if (!activeContainer) return;
+  const activeIndex = this.containers.indexOf(activeContainer);
+  const pathIds = Array.from({ length: n }, (_, i) => activeContainer.pathId + String.fromCharCode(97 + i));
+  const newContainers: Container[] = pathIds.map(pathId => ({
+    id: `container${this.containers.length}`,
+    active: false,
+    images: {},
+    imagePositions: {},
+    textFields: {},
+    textFieldPositions: {},
+    pathId,
+    rowIndex: 0,
+  }));
+
+  // Insert new containers at the correct index
+  this.containers.splice(activeIndex + 1, 0, ...newContainers);
+  const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
+  storyboard!.id = this.storyId!;
+  storyboard!.containers = this.containers;
+  await this.storyBoardService.saveStoryboards([storyboard!]);
+}
   
 
   splitStoryPathPrompt() {
@@ -159,14 +170,10 @@ export class BoardComponent implements OnInit {
 
   async onDrop(event: DragEvent) {
     event.preventDefault();
-
     const url = this.draggedImage;
     if (!url) return;
-
     const activeContainer = this.containers.find((container) => container.active);
-
     if (!activeContainer) return;
-
     const containerElement = document.getElementById(activeContainer.id);
     if (!containerElement) return;
 
@@ -174,7 +181,6 @@ export class BoardComponent implements OnInit {
     const y = event.offsetY;
 
     const newIndex = Object.keys(activeContainer.images).length.toString();
-
     activeContainer.images[newIndex] = url;
     // Set the dimensions to the stored values
     activeContainer.imagePositions[newIndex] = {
