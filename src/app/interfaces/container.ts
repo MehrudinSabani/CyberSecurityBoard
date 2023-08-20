@@ -7,5 +7,5 @@ export interface Container {
   imagePositions: { [key: string]: ImagePosition };
   textFields: { [key: string]: string };
   textFieldPositions: { [key: string]: ImagePosition };
-  pathId?: string;
+  pathId: string;
 }

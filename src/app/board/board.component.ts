@@ -11,14 +11,10 @@ import { ActivatedRoute } from '@angular/router';
 
 })
 
-
-
-
 export class BoardComponent implements OnInit {
 
-  containerPaths: string[] = ['default']; // Initialize with default pathId
 
-
+  rows: string[] = []; // Create a new property to hold the rows
 
   // todo: add a buffer icon until the story is fully loaded
   // todo: save storyboards only once, with a button "save and publish"
@@ -45,9 +41,6 @@ export class BoardComponent implements OnInit {
     if (this.storyId) {
       const storyboard = await this.storyBoardService.getStoryboard(this.storyId);
 
-      this.containers = storyboard!.containers;
-      this.containerPaths = Array.from(new Set(this.containers.map((container) => container.pathId!)));
-
       console.log('storyboard', storyboard?.containers);
 
       if (storyboard) {
@@ -61,9 +54,34 @@ export class BoardComponent implements OnInit {
       }
     }
 
+    this.rows = 'abcdefghijklmnopqrstuvwxyz'.split('');
+
+
   }
 
+  groupContainers() {
+    let groupedContainers: any = {};
+    
+    this.containers.forEach(container => {
+      let parentId = container.pathId.slice(0, -1);
+      if (!groupedContainers[parentId]) {
+        groupedContainers[parentId] = [];
+      }
+      groupedContainers[parentId].push(container);
+    });
+  
+    return groupedContainers;
+  }
+  
+  getGroupKeys() {
+    return Object.keys(this.groupContainers());
+  }
+  
+  
 
+  getContainers(letter: string) {
+    return this.containers.filter(c => c.pathId.startsWith(letter));
+  }
 
   async addContainer() {
     this.containers.forEach((container) => (container.active = false));
@@ -74,7 +92,7 @@ export class BoardComponent implements OnInit {
       imagePositions: {},
       textFields: {},
       textFieldPositions: {},
-      pathId: 'default' // Assign default pathId
+      pathId: 'path' // Assign default pathId
     };
     this.containers.push(newContainer);
 
@@ -86,48 +104,50 @@ export class BoardComponent implements OnInit {
 
 
 
-  async activateContainer(index: number) {
-
-    this.containers.forEach((container, i) => (container.active = i === index));
+  async activateContainer(container: Container) {
+    this.containers.forEach((c) => (c.active = c === container));
     this.updateElementPositions();
   }
+  
 
   async splitStoryPath(n: number) {
     const activeContainer = this.containers.find((container) => container.active);
     if (!activeContainer) return;
-
-    // Get the index of the active container
+  
     const activeIndex = this.containers.indexOf(activeContainer);
-
+  
     // Generate the pathId for the new containers
     const pathIds = [];
     for (let i = 0; i < n; i++) {
-      const pathId = String.fromCharCode(97 + i); // Generate pathId as a, b, c, ...
+      const pathId = activeContainer.pathId + String.fromCharCode(97 + i); // Append new pathId to existing pathId
       pathIds.push(pathId);
     }
-
+  
+    const newContainers = [];
     // Create new containers with the respective pathIds
     for (let i = 0; i < n; i++) {
       const newContainer: Container = {
-        id: `container${this.containers.length + i}`,
+        id: `container${this.containers.length + i}`, // Use a separate counter here
         active: false,
         images: {},
         imagePositions: {},
         textFields: {},
         textFieldPositions: {},
-        pathId: pathIds[i]
+        pathId: pathIds[i],
       };
-      this.containers.splice(activeIndex + i + 1, 0, newContainer);
+      newContainers.push(newContainer);
     }
-
+  
+    // Insert new containers at the correct index
+    this.containers.splice(activeIndex + 1, 0, ...newContainers);
+  
     const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
     storyboard!.id = this.storyId!;
     storyboard!.containers = this.containers;
     await this.storyBoardService.saveStoryboards([storyboard!]);
-
-    // Update the containerPaths array
-    this.containerPaths = Array.from(new Set(this.containers.map((container) => container.pathId!)));
   }
+  
+  
 
   splitStoryPathPrompt() {
     const userInput = prompt('Enter the number of paths to split');

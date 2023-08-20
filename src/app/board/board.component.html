@@ -25,14 +25,12 @@
   </div>
 
   <div class="storyboardNav">
-    <!-- Display the buttons for each path -->
-    <div *ngFor="let pathId of containerPaths">
+    <div *ngFor="let parentId of getGroupKeys()">
       <div class="path-row">
         <button
-          *ngFor="let container of containers | filterByPathId: pathId; let i = index"
-          (click)="activateContainer(i)"
-        >
-          {{ container.id }}
+          *ngFor="let container of groupContainers()[parentId]; let i = index"
+          (click)="activateContainer(container)">
+          {{ container.pathId }}
         </button>
       </div>
     </div>
@@ -41,8 +39,11 @@
     <button (click)="addTextField()">Input text</button>
     <button (click)="splitStoryPathPrompt()">Split Path</button>
   </div>
-
   
+
+
+
+
 
   <app-sidebar class="sidebar" [draggedImage]="draggedImage" [draggedImagePosition]="draggedImagePosition"
     (onDragStartEvent)="handleDragStartEvent($event)">

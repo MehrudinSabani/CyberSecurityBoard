@@ -98,6 +98,8 @@ export class StoryBoardService {
         return {
           id: containerData.id,
           active: containerData.active,
+          pathId: containerData.pathId, 
+
           images,
           imagePositions,
           textFields,
