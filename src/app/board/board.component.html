@@ -25,19 +25,17 @@
   </div>
 
   <div class="storyboardNav">
-    <div *ngFor="let parentId of getGroupKeys()">
-      <div class="path-row">
-        <button
-          *ngFor="let container of groupContainers()[parentId]; let i = index"
-          (click)="activateContainer(container)">
-          {{ container.pathId }}
-        </button>
-      </div>
+    <div class="path-row" *ngFor="let container of getFlattenedContainers(); let i = index">
+      <button
+        [style.margin-left.px]="container.pathId.length * 20"
+        (click)="activateContainer(container)">
+        {{ container.pathId }}
+      </button>
     </div>
   
     <button (click)="addContainer()"> + </button>
     <button (click)="continueStoryPath()"> ++ </button>
-
+  
     <button (click)="addTextField()">Input text</button>
     <button (click)="splitStoryPathPrompt()">Split Path</button>
   </div>

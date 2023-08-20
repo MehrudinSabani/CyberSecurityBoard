@@ -13,9 +13,6 @@ import { ActivatedRoute } from '@angular/router';
 
 export class BoardComponent implements OnInit {
 
-
-  rows: string[] = []; // Create a new property to hold the rows
-
   // todo: add a buffer icon until the story is fully loaded
   // todo: save storyboards only once, with a button "save and publish"
 
@@ -53,11 +50,22 @@ export class BoardComponent implements OnInit {
         console.log("Storyboard could not be created")
       }
     }
-
-    this.rows = 'abcdefghijklmnopqrstuvwxyz'.split('');
-
   }
 
+
+  getFlattenedContainers() {
+    let groupedContainers = this.groupContainers();
+    
+    // flatten the grouped containers into a single array
+    let flattenedContainers = ([] as Container[]).concat(...(Object.values(groupedContainers) as Container[][]));
+    
+    // sort the containers by pathId
+    flattenedContainers.sort((a, b) => a.pathId.localeCompare(b.pathId));
+    
+    return flattenedContainers;
+  }
+  
+  
   groupContainers() {
     let groupedContainers: any = {};
     
@@ -93,7 +101,6 @@ export class BoardComponent implements OnInit {
       textFields: {},
       textFieldPositions: {},
       pathId: 'path',
-      rowIndex: 0,
     };
     this.containers.push(newContainer);
   
@@ -148,7 +155,6 @@ async splitStoryPath(n: number) {
     textFields: {},
     textFieldPositions: {},
     pathId,
-    rowIndex: 0,
   }));
 
   // Insert new containers at the correct index
