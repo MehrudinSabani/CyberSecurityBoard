@@ -8,5 +8,6 @@ export interface Container {
   textFields: { [key: string]: string };
   textFieldPositions: { [key: string]: ImagePosition };
   pathId: string;
+  radioButtons?: { [key: string]: boolean };
 
 }

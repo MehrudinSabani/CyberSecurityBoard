@@ -13,6 +13,9 @@ import { ActivatedRoute } from '@angular/router';
 
 export class BoardComponent implements OnInit {
 
+  getKeys = Object.keys;
+
+
   // todo: add a buffer icon until the story is fully loaded
   // todo: save storyboards only once, with a button "save and publish"
 
@@ -116,54 +119,81 @@ export class BoardComponent implements OnInit {
     this.updateElementPositions();
   }
 
-  async continueStoryPath() {
-    this.containers.forEach((container) => (container.active = false));
+  // async continueStoryPath() {
+  //   this.containers.forEach((container) => (container.active = false));
   
-    const activeContainer = this.containers.find((container) => container.active);
+  //   const activeContainer = this.containers.find((container) => container.active);
+  //   if (!activeContainer) return;
+  
+  //   const previousId: any = await this.splitStoryPath(parseInt(activeContainer.id));
+  //   const newId = previousId + 1;
+  
+  //   const newContainer: Container = {
+  //     id: `container${newId}`,
+  //     active: true,
+  //     images: {},
+  //     imagePositions: {},
+  //     textFields: {},
+  //     textFieldPositions: {},
+  //     pathId: activeContainer.pathId,
+  //   };
+  //   this.containers.push(newContainer);
+  
+  //   const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
+  //   storyboard!.id = this.storyId!;
+  //   storyboard!.containers = this.containers;
+  //   await this.storyBoardService.saveStoryboards([storyboard!]);
+  // }
+  
+  async splitStoryPath(n: number) {
+    const activeContainer = this.containers.find(container => container.active);
     if (!activeContainer) return;
-  
-    const previousId: any = await this.splitStoryPath(parseInt(activeContainer.id));
-    const newId = previousId + 1;
-  
-    const newContainer: Container = {
-      id: `container${newId}`,
-      active: true,
+    const activeIndex = this.containers.indexOf(activeContainer);
+    const pathIds = Array.from({ length: n }, (_, i) => activeContainer.pathId + String.fromCharCode(97 + i));
+    const newContainers: Container[] = pathIds.map(pathId => ({
+      id: `container${this.containers.length}`,
+      active: false,
       images: {},
       imagePositions: {},
-      textFields: {},
-      textFieldPositions: {},
-      pathId: activeContainer.pathId,
-    };
-    this.containers.push(newContainer);
+      textFields: {}, // Initialize textFields as an empty object for each new container
+      textFieldPositions: {}, // Initialize textFieldPositions as an empty object for each new container
+      radioButtons: {}, // Initialize radioButtons as an empty object for each new container
+      pathId,
+    }));
   
+    // Generate n text fields and radio buttons for the active container
+    for (let i = 0; i < n; i++) {
+      const newIndex = Object.keys(activeContainer.textFields).length.toString();
+  
+      // Create a new object for textFields with the new key-value pair for the active container
+      activeContainer.textFields = {
+        ...activeContainer.textFields,
+        [newIndex]: ''
+      };
+  
+      // Create a new object for textFieldPositions with the new key-value pair for the active container
+      activeContainer.textFieldPositions = {
+        ...activeContainer.textFieldPositions,
+        [newIndex]: { x: 1000, y: 100 + i * 100, width: 150, height: 40 } // Adjust the y position for each text field
+      };
+  
+      // Create a new object for radioButtons with the new key-value pair for the active container
+      activeContainer.radioButtons = {
+        ...activeContainer.radioButtons,
+        [String.fromCharCode(97 + i)]: false
+      };
+    }
+  
+    // Insert new containers at the correct index
+    this.containers.splice(activeIndex + 1, 0, ...newContainers);
     const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
     storyboard!.id = this.storyId!;
     storyboard!.containers = this.containers;
+
+    this.updateElementPositions();
     await this.storyBoardService.saveStoryboards([storyboard!]);
   }
   
-async splitStoryPath(n: number) {
-  const activeContainer = this.containers.find(container => container.active);
-  if (!activeContainer) return;
-  const activeIndex = this.containers.indexOf(activeContainer);
-  const pathIds = Array.from({ length: n }, (_, i) => activeContainer.pathId + String.fromCharCode(97 + i));
-  const newContainers: Container[] = pathIds.map(pathId => ({
-    id: `container${this.containers.length}`,
-    active: false,
-    images: {},
-    imagePositions: {},
-    textFields: {},
-    textFieldPositions: {},
-    pathId,
-  }));
-
-  // Insert new containers at the correct index
-  this.containers.splice(activeIndex + 1, 0, ...newContainers);
-  const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
-  storyboard!.id = this.storyId!;
-  storyboard!.containers = this.containers;
-  await this.storyBoardService.saveStoryboards([storyboard!]);
-}
   
 
   splitStoryPathPrompt() {

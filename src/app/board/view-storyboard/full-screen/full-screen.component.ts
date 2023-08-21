@@ -14,6 +14,7 @@ export class FullScreenComponent {
   @Input() container!: Container; // Input property to receive the container data
   @Input() containerIndex!: number; // Input property to receive the container index
 
+  getKeys = Object.keys;
 
 
   toggleFullscreen() {

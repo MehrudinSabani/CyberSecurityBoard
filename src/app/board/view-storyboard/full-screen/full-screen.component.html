@@ -18,6 +18,16 @@
 
     </div>
 
+    <div *ngIf="container.radioButtons" class="pathChoice">
+        <div *ngFor="let key of getKeys(container.radioButtons)" class="button-row">
+          <div class="button-container" >
+            <input type="radio" [(ngModel)]="container.radioButtons[key]" name="{{'radio' + key}}">
+            <label>{{ key }}</label>
+          </div>
+        </div>
+      </div>
+      
+
 </div>
 
 <!-- todo: a custom loogic for fullscreen. Eventually just a blackbox with centered view -->

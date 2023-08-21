@@ -53,7 +53,6 @@ export class StoryBoardService {
   }
 
 
-
   // todo get storyboard by storyboard id
   async getStoryboard(storyboardId: string): Promise<Storyboard | null> {
     const storyboardRef = doc(this.firestore, 'storyboards', storyboardId);
@@ -62,51 +61,53 @@ export class StoryBoardService {
     if (storyboardDoc.exists()) {
       const storyboardData = storyboardDoc.data();
       const containersData = storyboardData['containers'];
-      
+  
       const containers: Container[] = containersData.map((containerData: Container) => {
         const imagesArray = Object.entries(containerData.images).map(([key, value]) => ({ key, value }));
         const imagePositionsArray = Object.entries(containerData.imagePositions).map(([key, value]) => ({ key, value }));
         const textFieldsArray = Object.entries(containerData.textFields).map(([key, value]) => ({ key, value }));
         const textFieldPositionsArray = Object.entries(containerData.textFieldPositions).map(([key, value]) => ({ key, value }));
-      
+  
         const images = imagesArray.reduce((acc: { [key: string]: string }, obj: any) => {
-          acc[obj.key] = obj.value.value;  // Access the first element of the value array
+          acc[obj.key] = obj.value.value;
           return acc;
         }, {});
-      
+  
         const imagePositions = imagePositionsArray.reduce(
           (acc: { [key: string]: { x: number; y: number, width: number, height: number } }, obj: any) => {
-            acc[obj.key] = obj.value.value;  // Access the value object directly
+            acc[obj.key] = obj.value.value;
             return acc;
           },
           {}
         );
-      
+  
         const textFields = textFieldsArray.reduce((acc: { [key: string]: string }, obj: any) => {
-          acc[obj.key] = obj.value.value;  // Access the value directly
+          acc[obj.key] = obj.value.value;
           return acc;
         }, {});
-      
+  
         const textFieldPositions = textFieldPositionsArray.reduce(
           (acc: { [key: string]: { x: number; y: number, width: number, height: number } }, obj: any) => {
-            acc[obj.key] = obj.value.value;  // Access the value object directly
+            acc[obj.key] = obj.value.value;
             return acc;
           },
           {}
         );
-      
+  
+        const radioButtons = containerData.radioButtons || {}; // Check if radioButtons property exists, otherwise fallback to an empty object
+  
         return {
           id: containerData.id,
           active: containerData.active,
-          pathId: containerData.pathId, 
-
+          pathId: containerData.pathId,
           images,
           imagePositions,
           textFields,
           textFieldPositions,
+          radioButtons
         };
       });
-      
+  
       return {
         storyName: storyboardData['storyName'],
         containers: containers,
@@ -117,6 +118,17 @@ export class StoryBoardService {
   }
   
   
+
+  // todo
+// getPathLetter(activeContainer: Container): string {
+//   const selectedRadioButton = Object.entries(activeContainer.radioButtons).find(([key, value]) => value === true);
+//   if (selectedRadioButton) {
+//     return selectedRadioButton[0];
+//   }
+//   return '';
+// }
+
+
   async getAllStoryboardsByUserId(userId: string): Promise<Storyboard[] | null> {
     
     const storyboardsRef = collection(this.firestore, 'storyboards');
