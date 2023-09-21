@@ -1,0 +1,57 @@
+<mat-dialog-content class="mat-typography">
+    <div class="form-body">
+        <form #addForm="ngForm" (ngSubmit)="createStoryboard(addForm)">
+            <table>
+                <tbody>
+                    <tr>
+                        Storyboard Name
+                        <td>
+                            <input type="text" ngModel name="storyName" required placeholder="example: Email fishing" />
+                            <!-- <div *ngIf="addForm.controls['storyName'].invalid && (addForm.controls['storyName'].dirty || addForm.controls['storyName'].touched)"
+                                class="alert alert-danger">
+                                StoryName is required.
+                            </div> -->
+                        </td>
+                    </tr>
+                    <tr>
+                        Storyboard Topic
+                        <td>
+                            <select name="storyTopic" ngModel required>
+                                <option type="text">Malware</option>
+                                <option type="text">Phishing </option>
+
+                                <option type="text">Ransomware </option>
+
+                                <option type="text">DoS / DDoS Atack</option>
+
+                                <option type="text">Insider Threats </option>
+
+                                <option type="text">Social Engineering </option>
+
+                                <option type="text">Zero-Day Exploit </option>
+                                <option type="text">IoT Vulnerabilities </option>
+                                <option type="text">Supply Chain Attacks </option>
+
+
+
+
+                            </select>
+                            <!-- <div *ngIf="addForm.controls['storyTopic'].invalid && (addForm.controls['storyTopic'].dirty || addForm.controls['storyTopic'].touched)"
+                                class="alert alert-danger">
+                                StoryTopic is required.
+                            </div> -->
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="form-footer">
+                <mat-dialog-actions align="end">
+                    <button mat-button mat-dialog-close id="add-storyboard-form"
+                        class="btn btn-secondary">Close</button>
+                    <button mat-button [mat-dialog-close]="true" cdkFocusInitial [disabled]="addForm.invalid"
+                        type="submit" class="btn btn-primary"> Create Storyboard </button>
+                </mat-dialog-actions>
+            </div>
+        </form>
+    </div>
+</mat-dialog-content>

@@ -1,0 +1,112 @@
+.storyBoard {
+  position: absolute;
+  top: 100px;
+  left: 50px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+.container {
+  /* position: relative; */
+  width: 1350px;
+  height: 680px;
+  padding: 0;
+  border: 1px solid black;
+  flex: 1 0 calc(100% - 120px);
+  /* Adjust the width to accommodate the sidebar */
+}
+
+.sidebar {
+  display: inline-block;
+  width: 120px;
+  margin-left: 10px;
+  /* Add margin to separate the sidebar from the container */
+}
+
+.storyboardNav {
+  display: block;
+  position: absolute;
+  margin-top: 690px;
+}
+
+.drag-area {
+  width: 700px;
+  height: 500px;
+  border: 1px solid black;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+.image-position {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+}
+
+
+input {
+  border: 1px solid #000; /* Creates a border around the input field */
+  background-color: #fff; /* Sets the background color of the input field */
+  color: #000; /* Sets the text color */
+  padding: 5px; /* Adds some padding around the text */
+  width: 100px;
+  height: 50px;
+}
+
+input:focus {
+  border-color: #4d90fe; /* Changes the border color when the input field is focused */
+  width: 100px;
+  height: 50px;
+}
+
+img{
+  border: #000;
+  border-style: dotted;
+}
+
+
+.path-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.center-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upper-rows,
+.lower-rows {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.parent-button {
+  margin-bottom: 10px;
+}
+
+.button-active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.pathChoice{
+  margin-top: 100px;
+  padding-right: 100px;
+  float: right;
+  width: 40px;
+  height: 40px;
+}

@@ -1,0 +1,21 @@
+.form-container {
+    width: 160px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: lightgray;
+    padding: 150px;
+    border-radius: 10px;
+  }
+  
+  .custom-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .mat-form-field {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  

@@ -1,0 +1,15 @@
+<div class="storyContainerWrapper">
+    <div class="storyContainer" *ngFor="let story of storyInfo">
+      <p> Name: {{story.storyName}}</p>
+      <p> Created by: {{story.userName}}</p>
+      <p> Topic: {{story.storyTopic}}</p>
+      <div class="button-container">
+        <button  mat-button color="primary" [routerLink]="'/storyboard/view/' + story.id">
+            <mat-icon>remove_red_eye</mat-icon> 
+            <p>View</p>
+          </button>
+      </div>
+
+    </div>
+  </div>
+  

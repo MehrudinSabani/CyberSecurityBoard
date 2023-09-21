@@ -1,0 +1,44 @@
+<mat-sidenav-container class="full-height" autosize="true">
+    <mat-sidenav mode="side" opened (click)="toggleSidebar()">
+
+
+        <div *ngIf="(afAuth.user | async)">
+
+            <div mat-menu-item class="menu-item">
+                <mat-icon>person</mat-icon>&nbsp;
+                <span [hidden]="collapse" routerLink="/">{{username}}</span>
+            </div>
+
+            <div mat-menu-item class="menu-item">
+                <mat-icon>dashboard</mat-icon>&nbsp;
+                <span [hidden]="collapse" routerLink="/dashboard">Dashboard</span>
+            </div>
+
+            <div mat-menu-item class="menu-item">
+                <mat-icon>exit_to_app</mat-icon>&nbsp;
+                <span [hidden]="collapse" (click)="logout()">Logout</span>
+            </div>
+        </div>
+
+
+
+        <div *ngIf="!(afAuth.user | async)">
+
+            <div mat-menu-item class="menu-item">
+                <mat-icon>create</mat-icon>&nbsp;
+                <span [hidden]="collapse" routerLink="/signup">Register</span>
+            </div>
+            <div mat-menu-item class="menu-item">
+                <mat-icon>arrow_forward</mat-icon>&nbsp;
+
+                <span [hidden]="collapse" routerLink="/login">Login</span>
+            </div>
+        </div>
+
+    </mat-sidenav>
+
+    <mat-sidenav-content class="padded">
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+
+</mat-sidenav-container>

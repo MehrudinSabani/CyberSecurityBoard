@@ -1,0 +1,56 @@
+<div class="storyBoard">
+  <div class="container-wrapper">
+    <div *ngFor="let container of containers; let containerIndex = index" [id]="'container' + containerIndex">
+      <div *ngIf="container.active">
+        <div [id]="'innerContainer' + containerIndex" class="container" (dragover)="onDragOver($event)"
+          (drop)="onDrop($event)">
+
+          <app-image [storyboardId]="storyId" [isResizing]="isResizing" [startX]="startX" [startY]="startY"
+            [draggedImagePosition]="draggedImagePosition" [containers]="containers" [container]="container"
+            [containerIndex]="containerIndex">
+
+          </app-image>
+
+
+          <app-text-field [storyboardId]="storyId" [isResizing]="isResizing" [startX]="startX" [startY]="startY"
+            [draggedImagePosition]="draggedImagePosition" [containers]="containers" [container]="container"
+            [containerIndex]="containerIndex">
+
+          </app-text-field>
+
+          <div *ngIf="container.radioButtons" class="pathChoice">
+            <div *ngFor="let key of getKeys(container.radioButtons); let i = index">
+
+              <input type="radio" [(ngModel)]="container.radioButtons[key]" name="{{'radio' + i}}" (click)="getRadioButtonValue(key)">{{ key }}
+              
+            </div>
+            
+          </div>
+          
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="storyboardNav">
+    <div class="path-row" *ngFor="let container of getFlattenedContainers(); let i = index">
+      <button
+        [style.margin-left.px]="container.pathId.length * 20"
+        (click)="activateContainer(container)">
+        {{ container.pathId }}
+      </button>
+    </div>
+  
+    <button (click)="addContainer()"> + </button>
+    <!-- <button (click)="continueStoryPath()"> ++ </button> -->
+  
+    <button (click)="addTextField()">Input text</button>
+    <button (click)="splitStoryPathPrompt()">Split Path</button>
+  </div>
+
+
+  <app-sidebar class="sidebar" [draggedImage]="draggedImage" [draggedImagePosition]="draggedImagePosition"
+    (onDragStartEvent)="handleDragStartEvent($event)">
+  </app-sidebar>
+</div>

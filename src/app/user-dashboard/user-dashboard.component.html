@@ -1,0 +1,12 @@
+<h3>My Storyboards</h3>
+<div class="storyContainer" *ngFor="let story of storyInfo">
+    <p>{{story.storyName}}</p>
+
+    <p>{{story.userName}}</p>
+
+    <p>{{story.storyTopic}}</p>
+
+    <button [routerLink]="'/storyboard/edit/' + story.id">Edit</button>
+    <button [routerLink]="'/storyboard/view/' + story.id">View</button>
+
+</div>

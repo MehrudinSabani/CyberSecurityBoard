@@ -1,0 +1,35 @@
+<div>
+    <table>
+        <thead>
+            <th>Characters</th>
+            <th>Symbols</th>
+            <th>Speech Bubles</th>
+            <th> Backgrounds</th>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td>
+                    <img class="sidebarImage" *ngFor="let image of characterImages" [src]="image.imageLink"
+                        (dragstart)="onDragStart($event, image.imageLink)">
+                </td>
+
+                <td>
+                    <img class="sidebarImage" *ngFor="let image of symbolImages" [src]="image.imageLink"
+                        (dragstart)="onDragStart($event, image.imageLink)">
+                </td>
+
+                <td>
+                    <img class="sidebarImage" *ngFor="let image of bubbleImages" [src]="image.imageLink"
+                        (dragstart)="onDragStart($event, image.imageLink)">
+                </td>
+
+                <td>
+                    <img class="sidebarImage" *ngFor="let image of backgroundImages" [src]="image.imageLink"
+tr>
+        </tbody>
+    </table>
+
+    <button routerLink="upload"> Upload Image</button>
+
+</div>

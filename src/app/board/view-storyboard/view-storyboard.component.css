@@ -1,0 +1,23 @@
+.storyBoard {
+    position: absolute;
+    top: 100px;
+    left: 50px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+
+.storyboardNav {
+    display: block;
+    position: absolute;
+    margin-top: 690px;
+}
+
+
+.storyboardNav button {}
+
+.storyboardNav button.active {
+    background-color: #007bff;
+    color: white;
+}
+

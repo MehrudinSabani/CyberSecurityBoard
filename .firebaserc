@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "cybersecurityboard-a5dc4": {
+      "hosting": {
+        "CyberSecurityBoard": [
+          "cybersecurityboard-a5dc4"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "cybersecurityboard-a5dc4"
+  }
+}
