@@ -40,63 +40,96 @@ export class ViewStoryboardComponent {
       }
     }
 
-    this.activateContainer(this.activeContainerIndex);
+    // this.activateContainer(this.activeContainerIndex);
 
   }
-
-  async activateContainer(index: number) {
-    this.containers.forEach((container, i) => (container.active = i === index));
-  }
-
-
-  // fullscreen and navigation functions
-  // toggleFullscreen() {
-  //   if (!document.fullscreenElement) {
-  //     this.openFullscreen(this.fullscreenContainer.nativeElement);
-  //   }
-  // }
-
-  // openFullscreen(element: any) {
-  //   if (element.requestFullscreen) {
-  //     element.requestFullscreen();
-  //   } else if (element.mozRequestFullScreen) { // Firefox
-  //     element.mozRequestFullScreen();
-  //   } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
-  //     element.webkitRequestFullscreen();
-  //   } else if (element.msRequestFullscreen) { // IE/Edge
-  //     element.msRequestFullscreen();
-  //   }
-  // }
 
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
+    console.log('Key pressed', event.key);
     if (event.key === 'ArrowLeft') {
       this.navigateContainers(-1); // Navigate left
     } else if (event.key === 'ArrowRight') {
       this.navigateContainers(1); // Navigate right
     }
   }
-
+  
+  //important, user should not be able to navigate using arrows when a choice needs to be made
   navigateContainers(offset: number) {
-    const newIndex = this.activeContainerIndex + offset;
+    console.log('Navigating containers', offset);
+
+    const activeContainer: any = this.containers.find(container => container.active);
+    if (!activeContainer) {
+      return;
+    }
+
+    const activeIndex = this.containers.indexOf(activeContainer);
+    const newIndex = activeIndex + offset;
+
     if (newIndex >= 0 && newIndex < this.containers.length) {
+      // If navigating to the right, check if the next container is part of a different storyline
+      if (offset > 0 && this.isDifferentStoryline(newIndex)) {
+        return;
+      }
+
       this.activeContainerIndex = newIndex;
       this.setActiveContainer();
     }
+  }
+
+
+  isDifferentStoryline(index: number): boolean {
+    // If it's out of bounds, stop navigation
+    if (index < 0 || index >= this.containers.length) {
+      console.log("stop, new storyline");
+      return true;
+    }
+  
+    // Check if the pathId of the next container starts with the pathId of the current container
+    const currentPathId = this.containers[index - 1].pathId;
+    const nextPathId = this.containers[index].pathId;
+    return !nextPathId.startsWith(currentPathId);
   }
 
   setActiveContainer() {
     this.containers.forEach((container, i) => (container.active = i === this.activeContainerIndex));
   }
 
-  navigateToContainer(index: number) {
-    this.activeContainerIndex = index;
-    this.setActiveContainer();
+  async activateContainer(container: Container) {
+    // Set active property to false for all containers
+    this.containers.forEach((c) => c.active = false);
+
+    // Set active property to true for the clicked container
+    container.active = true;
   }
 
 
+  getFlattenedContainers() {
+    let groupedContainers = this.groupContainers();
 
+    // flatten the grouped containers into a single array
+    let flattenedContainers = ([] as Container[]).concat(...(Object.values(groupedContainers) as Container[][]));
+
+    // sort the containers by pathId
+    flattenedContainers.sort((a, b) => a.pathId.localeCompare(b.pathId));
+
+    return flattenedContainers;
+  }
+
+  groupContainers() {
+    let groupedContainers: any = {};
+
+    this.containers.forEach(container => {
+      let parentId = container.pathId.slice(0, -1);
+      if (!groupedContainers[parentId]) {
+        groupedContainers[parentId] = [];
+      }
+      groupedContainers[parentId].push(container);
+    });
+
+    return groupedContainers;
+  }
 
 }
 

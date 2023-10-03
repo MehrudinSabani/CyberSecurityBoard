@@ -16,11 +16,11 @@ export class StoryBoardService {
     // Convert images, imagePositions, textFields, and textFieldPositions objects to arrays of objects with keys
     const storyboardsForFirestore = storyboards.map((storyboard) => {
       const containersForFirestore = storyboard.containers.map((container) => {
-        const imagesArray = Object.entries(container.images).map(([key, value]) => ({ key, value }));
-        const imagePositionsArray = Object.entries(container.imagePositions).map(([key, value]) => ({ key, value }));
-        const textFieldsArray = Object.entries(container.textFields).map(([key, value]) => ({ key, value }));
-        const textFieldPositionsArray = Object.entries(container.textFieldPositions).map(([key, value]) => ({ key, value }));
-        const radioButtonArray = Object.entries(container.radioButtons).map(([key,value]) => ({key, value}));
+        const imagesArray = Object.entries(container.images || {}).map(([key, value]) => ({ key, value }));
+        const imagePositionsArray = Object.entries(container.imagePositions || {}).map(([key, value]) => ({ key, value }));
+        const textFieldsArray = Object.entries(container.textFields || {}).map(([key, value]) => ({ key, value }));
+        const textFieldPositionsArray = Object.entries(container.textFieldPositions || {}).map(([key, value]) => ({ key, value }));
+        const radioButtonArray = Object.entries(container.radioButtons || {} ).map(([key,value]) => ({key, value}));
 
         return {
           ...container,
@@ -28,6 +28,8 @@ export class StoryBoardService {
           imagePositions: imagePositionsArray,
           textFields: textFieldsArray,
           textFieldPositions: textFieldPositionsArray,
+          radioButton: radioButtonArray
+
         };
       });
 

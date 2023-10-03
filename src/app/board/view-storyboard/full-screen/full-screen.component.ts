@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Container } from 'src/app/interfaces/container';
 
 @Component({
@@ -14,6 +14,10 @@ export class FullScreenComponent {
   @Input() container!: Container; // Input property to receive the container data
   @Input() containerIndex!: number; // Input property to receive the container index
   @Input() containers: Container[];
+
+
+  // needed for syncing the navigation of pathid and index id
+  @Output() activeContainerIndexChanged = new EventEmitter<number>();
 
 
   getKeys = Object.keys;
@@ -38,12 +42,10 @@ export class FullScreenComponent {
     }
   }
 
-
-  async activateContainer(index: number) {
-    this.containers.forEach((container, i) => (container.active = i === index));
+  async activateContainer(container: Container) {
+    this.containers.forEach((c) => (c.active = c === container));
   }
 
-  
   getActiveContainer(): Container | undefined {
     return this.containers.find(container => container.active);
   }
@@ -51,13 +53,22 @@ export class FullScreenComponent {
 
   getRadioButtonValue(key: string) {
     const activeContainer = this.getActiveContainer();
+    let newActiveContainer: any;
     if (activeContainer) {
       const newPathId = activeContainer.pathId + key;
-      const newActiveContainer:any = this.containers.find(container => container.pathId === newPathId);
+       newActiveContainer = this.containers.find(container => container.pathId === newPathId);
       if (newActiveContainer) {
         this.activateContainer(newActiveContainer);
       }
     }
+    console.log(key)
+
+    if (newActiveContainer) {
+      this.activateContainer(newActiveContainer);
+      const newActiveContainerIndex = this.containers.indexOf(newActiveContainer);
+      this.activeContainerIndexChanged.emit(newActiveContainerIndex);
+    }
   }
+
 
 }

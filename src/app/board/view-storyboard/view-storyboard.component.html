@@ -2,12 +2,9 @@
 <div class="storyBoard">
     <div *ngFor="let container of containers; let containerIndex = index" [id]="'container' + containerIndex">
         <div *ngIf="container.active">
-            
-            <app-full-screen 
-            [container]="container"
-            [containers]="containers"
-            [containerIndex]="containerIndex">
 
+            <app-full-screen (activeContainerIndexChanged)="activeContainerIndex = $event" [container]="container"
+                [containers]="containers" [containerIndex]="containerIndex">
             </app-full-screen>
 
             <!-- <div [id]="'innerContainer' + containerIndex" class="container" #fullscreen>
@@ -32,10 +29,13 @@
     </div>
 
     <div class="storyboardNav">
-        <button *ngFor="let container of containers; let i = index" (click)="navigateToContainer(i)"
-            [ngClass]="{ 'active': i === activeContainerIndex }">
-            {{ i + 1 }}
-        </button>
-        <!-- <button (click)="toggleFullscreen()">Toggle Fullscreen</button> -->
+        <div class="path-row" *ngFor="let container of getFlattenedContainers(); let i = index">
+            <button [style.margin-left.px]="container.pathId.length * 20"
+            (click)="activateContainer(container)"
+            [class.active-container]="container.active">
+                {{ container.pathId }}
+            </button>
+        </div>
+
     </div>
 </div>

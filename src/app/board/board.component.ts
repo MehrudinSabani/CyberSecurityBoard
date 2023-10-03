@@ -82,11 +82,6 @@ export class BoardComponent implements OnInit {
   
     return groupedContainers;
   }
-  
-  getGroupKeys() {
-    return Object.keys(this.groupContainers());
-  }
-
 
   // todo:add a plus symbol in the middle and triger this function only once
   // solution check if there are any containers, if none - create one
@@ -111,10 +106,14 @@ export class BoardComponent implements OnInit {
   
 
   async activateContainer(container: Container) {
-    this.containers.forEach((c) => (c.active = c === container));
+    // Set active property to false for all containers
+    this.containers.forEach((c) => c.active = false);
+    
+    // Set active property to true for the clicked container
+    container.active = true;
     this.updateElementPositions();
   }
-
+  
   getActiveContainer(): Container | undefined {
     return this.containers.find(container => container.active);
   }
@@ -129,6 +128,34 @@ export class BoardComponent implements OnInit {
         this.activateContainer(newActiveContainer);
       }
     }
+  }
+  
+
+  // todo
+  async continueStoryPath() {
+    const activeContainer = this.containers.find(container => container.active);
+    if (!activeContainer) return;
+    const activeIndex = this.containers.indexOf(activeContainer);
+  
+    const newContainer: Container = {
+      id: `container${this.containers.length}`,
+      active: false,
+      images: {},
+      imagePositions: {},
+      textFields: {}, // Initialize textFields as an empty object for the new container
+      textFieldPositions: {}, // Initialize textFieldPositions as an empty object for the new container
+      radioButtons: {}, // Initialize radioButtons as an empty object for the new container
+      pathId: activeContainer.pathId, // Use the same pathId as the active container
+    };
+  
+    // Insert new container at the correct index
+    this.containers.splice(activeIndex + 1, 0, newContainer);
+    const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
+    storyboard!.id = this.storyId!;
+    storyboard!.containers = this.containers;
+  
+    this.updateElementPositions();
+    await this.storyBoardService.saveStoryboards([storyboard!]);
   }
   
 
