@@ -1,7 +1,7 @@
 import { CdkDrag, CdkDragEnd } from '@angular/cdk/drag-drop';
 import { Component, Input } from '@angular/core';
 import { Container } from 'src/app/interfaces/container';
-import { ImagePosition } from 'src/app/interfaces/image-position';
+import { ObjectPosition } from 'src/app/interfaces/object-position';
 import { StoryBoardService } from 'src/app/services/storyboard-storage.service';
 
 
@@ -16,7 +16,7 @@ export class TextFieldComponent {
   @Input() isResizing: boolean;
   @Input() startX: number;
   @Input() startY: number;
-  @Input() draggedImagePosition: ImagePosition;
+  @Input() draggedImagePosition: ObjectPosition;
   @Input() containers: Container[];
 
   @Input() container: Container;

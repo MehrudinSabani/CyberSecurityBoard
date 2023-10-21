@@ -1,7 +1,7 @@
 import { Component, ElementRef, HostListener, Renderer2, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Container } from 'src/app/interfaces/container';
-import { ImagePosition } from 'src/app/interfaces/image-position';
+import { ObjectPosition } from 'src/app/interfaces/object-position';
 import { StoryBoardService } from 'src/app/services/storyboard-storage.service';
 
 @Component({
@@ -20,6 +20,14 @@ export class ViewStoryboardComponent {
   containers: Container[] = [];
 
   fullscreen: boolean = false;
+
+  // for assigning random colors to paths
+  pathIdColors: Map<string, string> = new Map();
+
+  predefinedColors: string[] = [
+    '#FF5733', '#33FF57', '#3357FF', '#800000', '#008000', '#000080', '#808000', '#008080', '#800080', '#000000',
+    '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFFFFF', '#C0C0C0', '#808080', '#999999'
+  ];
 
 
   constructor(private storyBoardService: StoryBoardService,
@@ -41,7 +49,7 @@ export class ViewStoryboardComponent {
     }
 
     // this.activateContainer(this.activeContainerIndex);
-
+  
   }
 
 
@@ -131,5 +139,25 @@ export class ViewStoryboardComponent {
     return groupedContainers;
   }
 
+  // random colors assigning
+  generateRandomColor(): string {
+    return '#' + Math.floor(Math.random()*16777215).toString(16);
+  }
+  
+  getColorForPathId(pathId: string): string {
+    // If it's the first path, don't color it
+    if (pathId === 'path') {
+      return '';
+    }
+  
+    if (!this.pathIdColors.has(pathId)) {
+      const color = this.predefinedColors[this.pathIdColors.size % this.predefinedColors.length];
+      this.pathIdColors.set(pathId, color);
+      localStorage.setItem(pathId, color);
+    }
+    return this.pathIdColors.get(pathId)!;
+  }
+  
+  
 }
 

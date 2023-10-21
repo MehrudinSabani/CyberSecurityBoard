@@ -1,4 +1,4 @@
-export interface ImagePosition {
+export interface ObjectPosition {
     x: number;
     y: number;
     width: number;

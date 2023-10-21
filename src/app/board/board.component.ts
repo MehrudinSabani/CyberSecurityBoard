@@ -1,5 +1,5 @@
 import { StoryBoardService } from '../services/storyboard-storage.service';
-import { ImagePosition } from '../interfaces/image-position';
+import { ObjectPosition } from '../interfaces/object-position';
 import { Container } from '../interfaces/container';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -10,6 +10,9 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./board.component.css'],
 
 })
+
+
+
 
 export class BoardComponent implements OnInit {
 
@@ -27,7 +30,7 @@ export class BoardComponent implements OnInit {
   containers: Container[] = [];
 
   draggedImage: string;
-  draggedImagePosition: ImagePosition;
+  draggedImagePosition: ObjectPosition;
 
   // image resizing
   isResizing = false;
@@ -37,21 +40,25 @@ export class BoardComponent implements OnInit {
   constructor(private storyBoardService: StoryBoardService, private route: ActivatedRoute) { }
 
   async ngOnInit() {
-    this.storyId = this.route.snapshot.paramMap.get('id') ?? '';
-    if (this.storyId) {
-      const storyboard = await this.storyBoardService.getStoryboard(this.storyId);
+    // this.storyId = this.route.snapshot.paramMap.get('id') ?? '';
+    // if (this.storyId) {
+    //   const storyboard = await this.storyBoardService.getStoryboard(this.storyId);
 
-      console.log('storyboard', storyboard?.containers);
+    //   console.log('storyboard', storyboard?.containers);
 
-      if (storyboard) {
-        this.storyboardName = storyboard.storyName;
-        this.containers = storyboard.containers;
-      } else {
+    //   if (storyboard) {
+    //     this.storyboardName = storyboard.storyName;
+    //     this.containers = storyboard.containers;
+    //   } else {
 
-        // todo: additional measures for error handling
-        // instead Show error message or redirect to another page
-        console.log("Storyboard could not be created")
-      }
+    //     // todo: additional measures for error handling
+    //     // instead Show error message or redirect to another page
+    //     console.log("Storyboard could not be created")
+    //   }
+    // }
+
+    if (this.containers.length === 0) {
+      this.addContainer();
     }
   }
 
@@ -262,7 +269,7 @@ export class BoardComponent implements OnInit {
         const imageElement = document.getElementById(`image${containerIndex}_${index}`);
         if (!imageElement || typeof position !== 'object' || position === null) return;
 
-        const pos = position as ImagePosition;
+        const pos = position as ObjectPosition;
         imageElement.style.left = `${pos.x}px`;
         imageElement.style.top = `${pos.y}px`;
         imageElement.style.width = `${pos.width}px`;
@@ -279,7 +286,7 @@ export class BoardComponent implements OnInit {
         const textFieldElement = document.getElementById(`textField${containerIndex}_${index}`);
         if (!textFieldElement || typeof position !== 'object' || position === null) return;
 
-        const pos = position as ImagePosition;
+        const pos = position as ObjectPosition;
         textFieldElement.style.left = `${pos.x}px`;
         textFieldElement.style.top = `${pos.y}px`;
         textFieldElement.style.width = `${pos.width}px`;
@@ -317,6 +324,8 @@ export class BoardComponent implements OnInit {
 
     this.handleStoryboardOperations(storyboardId!, this.containers);
   }
+
+
 
 // sidebar menu functions
   onDragOver(event: DragEvent) {
