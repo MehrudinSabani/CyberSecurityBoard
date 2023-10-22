@@ -5,12 +5,14 @@
      style="position: absolute"
      cdkDrag cdkDragBoundary=".container">
      
-    <textarea [(ngModel)]="container.textFields[textField.key]"
-           (mousedown)="startResize($event, j, true)"
-           (mousemove)="resizeImage($event, j, true)"
-           (mouseup)="endResize()"
-           style="width: 100%; height: 100%;"
-           ></textarea>
+     <textarea [(ngModel)]="container.textFields[textField.key].text"
+     [ngClass]="container.textFields[textField.key].class"
+     (mousedown)="startResize($event, j, true)"
+     (mousemove)="resizeImage($event, j, true)"
+     (mouseup)="endResize()"
+     style="width: 100%; height: 100%;"
+  ></textarea>
+  
     <!-- <div cdkDragHandle style="width: 20px; height: 20px; position: absolute; bottom: 0; right: 0; background: grey;"></div> -->
 </div>
 

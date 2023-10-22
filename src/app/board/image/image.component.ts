@@ -38,24 +38,21 @@ export class ImageComponent {
       event.clientX > elementRect.right - threshold &&
       event.clientY > elementRect.bottom - threshold;
 
-    if (isWithinThreshold) {
+      
+
+    if (isWithinThreshold && event.buttons === 1) {
       this.isResizing = true;
       this.startX = event.clientX;
       this.startY = event.clientY;
-
-      // Copy the properties of the current ImagePosition to create a new instance
-      if (isTextField) {
-        this.draggedImagePosition = { ...this.container.textFieldPositions[index] };
-      } else {
-        this.draggedImagePosition = { ...this.container.imagePositions[index] };
-      }
+      this.draggedImagePosition = { ...this.container.imagePositions[index] };
+    
 
     }
   }
 
 
   resizeImage(event: MouseEvent, index: number, isTextField: boolean) {
-    if (this.isResizing) {
+    if (this.isResizing && event.buttons === 1) {
       const currentElementPosition = isTextField
         ? this.container.textFieldPositions[index]
         : this.container.imagePositions[index];
@@ -77,8 +74,11 @@ export class ImageComponent {
   }
 
 
-  endResize() {
-    this.isResizing = false;
+  endResize(event: MouseEvent) {
+    if (!event.buttons) {
+      this.isResizing = false;
+    }
+ 
   }
   onDragEnded(event: CdkDragEnd, index: number) {
     const elementRect = event.source.element.nativeElement.getBoundingClientRect();

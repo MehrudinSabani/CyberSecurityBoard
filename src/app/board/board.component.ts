@@ -18,7 +18,6 @@ export class BoardComponent implements OnInit {
 
   getKeys = Object.keys;
 
-
   // todo: add a buffer icon until the story is fully loaded
   // todo: save storyboards only once, with a button "save and publish"
 
@@ -40,22 +39,23 @@ export class BoardComponent implements OnInit {
   constructor(private storyBoardService: StoryBoardService, private route: ActivatedRoute) { }
 
   async ngOnInit() {
-    // this.storyId = this.route.snapshot.paramMap.get('id') ?? '';
-    // if (this.storyId) {
-    //   const storyboard = await this.storyBoardService.getStoryboard(this.storyId);
 
-    //   console.log('storyboard', storyboard?.containers);
+    this.storyId = this.route.snapshot.paramMap.get('id') ?? '';
+    if (this.storyId) {
+      const storyboard = await this.storyBoardService.getStoryboard(this.storyId);
 
-    //   if (storyboard) {
-    //     this.storyboardName = storyboard.storyName;
-    //     this.containers = storyboard.containers;
-    //   } else {
+      console.log('storyboard', storyboard?.containers);
 
-    //     // todo: additional measures for error handling
-    //     // instead Show error message or redirect to another page
-    //     console.log("Storyboard could not be created")
-    //   }
-    // }
+      if (storyboard) {
+        this.storyboardName = storyboard.storyName;
+        this.containers = storyboard.containers;
+      } else {
+
+        // todo: additional measures for error handling
+        // instead Show error message or redirect to another page
+        console.log("Storyboard could not be created")
+      }
+    }
 
     if (this.containers.length === 0) {
       this.addContainer();
@@ -190,7 +190,7 @@ export class BoardComponent implements OnInit {
       // Create a new object for textFields with the new key-value pair for the active container
       activeContainer.textFields = {
         ...activeContainer.textFields,
-        [newIndex]: ''
+        [newIndex]: { text: '', class: 'dialogText' }
       };
   
       // Create a new object for textFieldPositions with the new key-value pair for the active container
@@ -217,7 +217,6 @@ export class BoardComponent implements OnInit {
   }
   
   
-
   splitStoryPathPrompt() {
     const userInput = prompt('Enter the number of paths to split');
     const numberOfPaths = parseInt(userInput!, 10);
@@ -310,7 +309,7 @@ export class BoardComponent implements OnInit {
     // Create a new object for textFields with the new key-value pair
     activeContainer.textFields = {
       ...activeContainer.textFields,
-      [newIndex]: ''
+      [newIndex]: { text: '', class: 'dialogText' }
     };
 
     // Create a new object for textFieldPositions with the new key-value pair
@@ -325,6 +324,29 @@ export class BoardComponent implements OnInit {
     this.handleStoryboardOperations(storyboardId!, this.containers);
   }
 
+  async addHeaderField() {
+    const activeContainer = this.containers.find((container) => container.active);
+    if (!activeContainer) return;
+  
+    const newIndex = Object.keys(activeContainer.textFields).length.toString();
+  
+    activeContainer.textFields = {
+      ...activeContainer.textFields,
+      [newIndex]: { text: '', class: 'headingText' }  // include the class here
+    };
+
+    // Create a new object for textFieldPositions with the new key-value pair
+    activeContainer.textFieldPositions = {
+      ...activeContainer.textFieldPositions,
+      [newIndex]: { x: 50, y: 50, width: 80, height: 40 }
+    };
+  
+    // Get the storyboard id
+    const storyboardId = this.route.snapshot.paramMap.get('id');
+  
+    this.handleStoryboardOperations(storyboardId!, this.containers);
+  }
+  
 
 
 // sidebar menu functions

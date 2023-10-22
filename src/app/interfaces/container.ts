@@ -1,4 +1,5 @@
 import { ObjectPosition } from "./object-position";
+import { TextField } from "./text-field";
 
 
 
@@ -7,7 +8,7 @@ export interface Container {
   active: boolean;
   images: { [key: string]: string };
   imagePositions: { [key: string]: ObjectPosition };
-  textFields: { [key: string]: string };
+  textFields: { [key: string]: TextField };
   textFieldPositions: { [key: string]: ObjectPosition };
   pathId: string;
   radioButtons?: any;

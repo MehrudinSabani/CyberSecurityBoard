@@ -3,6 +3,7 @@ import { Firestore, addDoc, collection, doc, getDoc, getDocs, query, setDoc, upd
 import { Container } from '../interfaces/container';
 import { Storyboard } from '../interfaces/story-board';
 import { AuthenticationService } from '../authentication/authentication.service';
+import { TextField } from '../interfaces/text-field';
 
 @Injectable({
   providedIn: 'root',
@@ -18,21 +19,19 @@ export class StoryBoardService {
       const containersForFirestore = storyboard.containers.map((container) => {
         const imagesArray = Object.entries(container.images || {}).map(([key, value]) => ({ key, value }));
         const imagePositionsArray = Object.entries(container.imagePositions || {}).map(([key, value]) => ({ key, value }));
-        const textFieldsArray = Object.entries(container.textFields || {}).map(([key, value]) => ({ key, value }));
         const textFieldPositionsArray = Object.entries(container.textFieldPositions || {}).map(([key, value]) => ({ key, value }));
         const radioButtonArray = Object.entries(container.radioButtons || {} ).map(([key,value]) => ({key, value}));
-
+  
         return {
           ...container,
           images: imagesArray,
           imagePositions: imagePositionsArray,
-          textFields: textFieldsArray,
+          textFields: container.textFields,  // Save as an object
           textFieldPositions: textFieldPositionsArray,
           radioButton: radioButtonArray
-
         };
       });
-
+  
       return {
         ...storyboard,
         containers: containersForFirestore
@@ -68,7 +67,10 @@ export class StoryBoardService {
       const containers: Container[] = containersData.map((containerData: Container) => {
         const imagesArray = Object.entries(containerData.images).map(([key, value]) => ({ key, value }));
         const imagePositionsArray = Object.entries(containerData.imagePositions).map(([key, value]) => ({ key, value }));
-        const textFieldsArray = Object.entries(containerData.textFields).map(([key, value]) => ({ key, value }));
+        
+        // Properly destructure the TextField object
+        const textFieldsArray = Object.entries(containerData.textFields).map(([key, value]) => ({ key, value: { text: value.text, class: value.class } }));
+        
         const textFieldPositionsArray = Object.entries(containerData.textFieldPositions).map(([key, value]) => ({ key, value }));
   
         const images = imagesArray.reduce((acc: { [key: string]: string }, obj: any) => {
@@ -84,8 +86,9 @@ export class StoryBoardService {
           {}
         );
   
-        const textFields = textFieldsArray.reduce((acc: { [key: string]: string }, obj: any) => {
-          acc[obj.key] = obj.value.value;
+        // Build the textFields object correctly
+        const textFields = textFieldsArray.reduce((acc: { [key: string]: TextField }, obj: any) => {
+          acc[obj.key] = { text: obj.value.text, class: obj.value.class };
           return acc;
         }, {});
   
