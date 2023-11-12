@@ -40,6 +40,8 @@ import { EditStoryboardComponent } from './board/edit-storyboard/edit-storyboard
 import { FullScreenComponent } from './board/view-storyboard/full-screen/full-screen.component';
 import { FilterByPathIdPipe } from './board/filter-by-path-id.pipe';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatTab, MatTabsModule} from '@angular/material/tabs';
+import { MatMenuModule } from '@angular/material/menu';
 
 
 
@@ -77,6 +79,8 @@ import {MatFormFieldModule} from '@angular/material/form-field';
     MatTooltipModule,
     MatDialogModule,
     MatFormFieldModule,
+    MatTabsModule,
+    MatMenuModule,
 
 
     // angular firebase integration

@@ -1,4 +1,33 @@
 .sidebarImage{
-    width: 70px; 
+    height: 120px;
     object-fit: cover;
+    border-width: thin;
+    border-color: black;
+    border-style: dotted;
+    padding: 5px;
+    margin: 2px;
 }
+
+.navBar{
+    margin: 0 auto;
+}
+
+img{
+    background-color: white;
+}
+
+.imageHolder{
+    height: 120px; 
+    overflow-x: auto; 
+    position: relative; 
+    top: 0; 
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 35px;
+
+}
+.sidebar {
+    display: block;
+    width: 1300px; 
+
+  }

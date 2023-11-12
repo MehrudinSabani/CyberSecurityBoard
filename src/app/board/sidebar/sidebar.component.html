@@ -1,4 +1,4 @@
-<div>
+<!-- <div>
     <table>
         <thead>
             <th>Characters</th>
@@ -32,4 +32,28 @@ tr>
 
     <button routerLink="upload"> Upload Image</button>
 
-</div>
+</div> -->
+
+
+<mat-tab-group class="navBar">
+
+        <mat-tab  label="Characters" id="char1">
+            <div class="imageHolder">
+                <img class="sidebarImage" *ngFor="let image of characterImages" [src]="image.imageLink"
+                (dragstart)="onDragStart($event, image.imageLink)">
+            </div>
+
+        </mat-tab>
+        <mat-tab label="Symbols">
+            <div class="imageHolder">
+            <img class="sidebarImage" *ngFor="let image of symbolImages" [src]="image.imageLink"
+                (dragstart)="onDragStart($event, image.imageLink)">
+            </div>
+        </mat-tab>
+        <mat-tab label="Speech Bubbles">
+             <div class="imageHolder">
+            <img class="sidebarImage" *ngFor="let image of bubbleImages" [src]="image.imageLink"
+                (dragstart)="onDragStart($event, image.imageLink)">
+            </div>
+        </mat-tab>
+</mat-tab-group>
