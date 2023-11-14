@@ -11,6 +11,7 @@ export interface Container {
   textFields: { [key: string]: TextField };
   textFieldPositions: { [key: string]: ObjectPosition };
   pathId: string;
+  pathDescription?: { [key: string]: TextField };
   radioButtons?: any;
 
 }

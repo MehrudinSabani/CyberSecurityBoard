@@ -1,8 +1,9 @@
 import { StoryBoardService } from '../services/storyboard-storage.service';
 import { ObjectPosition } from '../interfaces/object-position';
 import { Container } from '../interfaces/container';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Storyboard } from '../interfaces/story-board';
 
 @Component({
   selector: 'app-board',
@@ -11,10 +12,7 @@ import { ActivatedRoute } from '@angular/router';
 
 })
 
-
-
-
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit{
 
   getKeys = Object.keys;
 
@@ -36,8 +34,20 @@ export class BoardComponent implements OnInit {
   startX = 0;
   startY = 0;
 
+  dragging: boolean = false;
+
   constructor(private storyBoardService: StoryBoardService, private route: ActivatedRoute) { }
 
+  // onDragStart(event: DragEvent) {
+  //   this.dragging = true;
+  //   // ... other drag start logic
+  // }
+  
+  // onDragEnd(event: DragEvent) {
+  //   this.dragging = false;
+  //   // ... other drag end logic
+  // }
+  
   async ngOnInit() {
 
     this.storyId = this.route.snapshot.paramMap.get('id') ?? '';
@@ -60,8 +70,13 @@ export class BoardComponent implements OnInit {
     if (this.containers.length === 0) {
       this.addContainer();
     }
+
   }
 
+  // todo
+  async saveStoryBoard(){
+  }
+  
 
   getFlattenedContainers() {
     let groupedContainers = this.groupContainers();
@@ -74,7 +89,6 @@ export class BoardComponent implements OnInit {
     
     return flattenedContainers;
   }
-  
   
   groupContainers() {
     let groupedContainers: any = {};
@@ -101,8 +115,8 @@ export class BoardComponent implements OnInit {
       imagePositions: {},
       textFields: {},
       textFieldPositions: {},
-      pathId: 'path',
-    };
+      pathId: 'path'
+      };
     this.containers.push(newContainer);
   
     const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
@@ -180,6 +194,7 @@ export class BoardComponent implements OnInit {
       textFields: {}, // Initialize textFields as an empty object for each new container
       textFieldPositions: {}, // Initialize textFieldPositions as an empty object for each new container
       radioButtons: {}, // Initialize radioButtons as an empty object for each new container
+      pathDescription: {},
       pathId,
     }));
   
@@ -188,16 +203,17 @@ export class BoardComponent implements OnInit {
       const newIndex = Object.keys(activeContainer.textFields).length.toString();
   
       // Create a new object for textFields with the new key-value pair for the active container
-      activeContainer.textFields = {
-        ...activeContainer.textFields,
+// Create a new object for textFields with the new key-value pair for the active container
+      activeContainer.pathDescription = {
+        ...activeContainer.pathDescription,
         [newIndex]: { text: '', class: 'dialogText' }
       };
-  
-      // Create a new object for textFieldPositions with the new key-value pair for the active container
-      activeContainer.textFieldPositions = {
-        ...activeContainer.textFieldPositions,
-        [newIndex]: { x: 1000, y: 100 + i * 100, width: 150, height: 40 } // Adjust the y position for each text field
-      };
+
+      // // Create a new object for textFieldPositions with the new key-value pair for the active container
+      // activeContainer.textFieldPositions = {
+      //   ...activeContainer.textFieldPositions,
+      //   [newIndex]: { x: 1000, y: 100 + i * 100, width: 150, height: 40 } // Adjust the y position for each text field
+      // };
   
       // Create a new object for radioButtons with the new key-value pair for the active container
       activeContainer.radioButtons = {
@@ -309,7 +325,7 @@ export class BoardComponent implements OnInit {
     // Create a new object for textFields with the new key-value pair
     activeContainer.textFields = {
       ...activeContainer.textFields,
-      [newIndex]: { text: '', class: 'dialogText' }
+      [newIndex]: { text: '', class: '' }
     };
 
     // Create a new object for textFieldPositions with the new key-value pair
@@ -386,8 +402,4 @@ export class BoardComponent implements OnInit {
       this.updateElementPositions();
     }
   }
-
-
-  
-
 }

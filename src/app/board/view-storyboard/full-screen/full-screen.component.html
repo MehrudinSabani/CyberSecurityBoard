@@ -22,6 +22,8 @@
       <div *ngFor="let key of getKeys(container.radioButtons); let i = index">
 
         <input type="radio" [(ngModel)]="container.radioButtons[key]" name="{{'radio' + i}}" (click)="getRadioButtonValue(key)">{{ key }}
+        <label [(ngModel)]="container.pathDescription">test</label>
+
         
       </div>
       
