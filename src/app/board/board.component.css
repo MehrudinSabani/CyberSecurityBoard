@@ -43,6 +43,20 @@ body {
   flex-direction: column;
 }
 
+.save-storyboard {
+  margin-top: 400px;
+  position: absolute;
+  top: 0px;
+  margin-left: -100px;
+  display: flex;
+  flex-direction: column;
+  width: 100px;
+
+}
+.save-storyboard:hover{
+  background-color: rgb(20, 157, 10);
+}
+
 .actionButtons button {
   width: 50px;
 }

@@ -2,32 +2,36 @@
   (onDragStartEvent)="handleDragStartEvent($event)">
 </app-sidebar>
 
-
-
 <div class="storyBoard">
   <div class="container-wrapper">
     <div class="actionButtons">
 
-      <button mat-raised-button matTooltip="Insert text" matTooltipPosition="after"
-      (click)="addTextField()">
+      <button mat-raised-button matTooltip="Insert text" matTooltipPosition="after" (click)="addTextField()">
         <mat-icon>textsms</mat-icon>
       </button>
 
-      <button mat-raised-button matTooltip="Insert Headline" matTooltipPosition="after"
-      (click)="addHeaderField()">
-      <mat-icon>view_headline</mat-icon>
+      <button mat-raised-button matTooltip="Insert Headline" matTooltipPosition="after" (click)="addHeaderField()">
+        <mat-icon>view_headline</mat-icon>
       </button>
 
       <button mat-raised-button matTooltip="Continue Story Path" matTooltipPosition="after"
-      (click)="continueStoryPath()">
-      <mat-icon>arrow_forward</mat-icon>
+        (click)="continueStoryPath()">
+        <mat-icon>arrow_forward</mat-icon>
 
       </button>
 
       <button mat-raised-button matTooltip="Split Story Path" matTooltipPosition="after"
-      (click)="splitStoryPathPrompt()">
-      <mat-icon> call_split</mat-icon>
+        (click)="splitStoryPathPrompt()">
+        <mat-icon>call_split</mat-icon>
       </button>
+    </div>
+
+    <div class="save-storyboard">
+
+      <button mat-raised-button matTooltip="Publish & View" matTooltipPosition="after" (click)="saveAndPublishStory()">
+        <mat-icon>publish</mat-icon>
+      </button>
+
     </div>
 
     <div *ngFor="let container of containers; let containerIndex = index" [id]="'container' + containerIndex">
@@ -38,14 +42,11 @@
           <app-image [storyboardId]="storyId" [isResizing]="isResizing" [startX]="startX" [startY]="startY"
             [draggedImagePosition]="draggedImagePosition" [containers]="containers" [container]="container"
             [containerIndex]="containerIndex">
-
           </app-image>
-
 
           <app-text-field [storyboardId]="storyId" [isResizing]="isResizing" [startX]="startX" [startY]="startY"
             [draggedImagePosition]="draggedImagePosition" [containers]="containers" [container]="container"
             [containerIndex]="containerIndex">
-
           </app-text-field>
 
           <!-- fix from here downward -->
@@ -56,30 +57,21 @@
                 (click)="getRadioButtonValue(key)">{{ key }}
 
               <textarea [(ngModel)]="container.pathDescription"></textarea>
-                
             </div>
-
           </div>
-
-
-
         </div>
-
       </div>
     </div>
   </div>
-
 </div>
 
-<!-- <button>
-  Save and Publish story
-</button> -->
 
 <div class="storyboardNav">
 
+
   <div class="path-row" *ngFor="let container of getFlattenedContainers(); let i = index">
     <button [style.margin-left.px]="container.pathId.length * 150" (click)="activateContainer(container)"
-    [class.active-container]="container.active">
+      [class.active-container]="container.active">
       {{ container.pathId }}
     </button>
   </div>

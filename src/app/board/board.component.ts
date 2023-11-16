@@ -2,9 +2,7 @@ import { StoryBoardService } from '../services/storyboard-storage.service';
 import { ObjectPosition } from '../interfaces/object-position';
 import { Container } from '../interfaces/container';
 import { ChangeDetectorRef, Component, ElementRef, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Storyboard } from '../interfaces/story-board';
-import { PositionService } from '../services/position.service';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 
 @Component({
   selector: 'app-board',
@@ -38,20 +36,10 @@ export class BoardComponent implements OnInit{
   dragging: boolean = false;
 
   constructor(private storyBoardService: StoryBoardService, 
+    private router: Router,
     private route: ActivatedRoute,
-    private positionService: PositionService,
     private cd: ChangeDetectorRef) { }
 
-  // onDragStart(event: DragEvent) {
-  //   this.dragging = true;
-  //   // ... other drag start logic
-  // }
-  
-  // onDragEnd(event: DragEvent) {
-  //   this.dragging = false;
-  //   // ... other drag end logic
-  // }
-  
   async ngOnInit() {
 
     this.storyId = this.route.snapshot.paramMap.get('id') ?? '';
@@ -75,6 +63,7 @@ export class BoardComponent implements OnInit{
       this.addContainer();
     }
 
+    this.handleStoryboardOperations(this.storyId, this.containers);
   }
 
   // todo
@@ -126,8 +115,10 @@ export class BoardComponent implements OnInit{
     const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
     storyboard!.id = this.storyId!;
     storyboard!.containers = this.containers;
-    await this.storyBoardService.saveStoryboards([storyboard!]);
-  }
+
+    const storyboardId = this.route.snapshot.paramMap.get('id');
+
+    this.handleStoryboardOperations(storyboardId!, this.containers);  }
   
 
   async activateContainer(container: Container) {
@@ -161,7 +152,6 @@ export class BoardComponent implements OnInit{
     }
   }
 
-  // todo
   async continueStoryPath() {
     const activeContainer = this.containers.find(container => container.active);
     if (!activeContainer) return;
@@ -183,13 +173,8 @@ export class BoardComponent implements OnInit{
     const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
     storyboard!.id = this.storyId!;
     storyboard!.containers = this.containers;
-  
-    this.updateElementPositions();
-    // await this.storyBoardService.saveStoryboards([storyboard!]);
   }
   
-
-
   async splitStoryPath(n: number) {
     const activeContainer = this.containers.find(container => container.active);
     if (!activeContainer) return;
@@ -273,12 +258,7 @@ export class BoardComponent implements OnInit{
       // Get the storyboard id
       const storyboardId = this.route.snapshot.paramMap.get('id');
   
-      this.handleStoryboardOperations(storyboardId!, this.containers);
-  
-      // Call updateSingleElementPosition with the index of the dropped element
-      // this.updateSingleElementPosition(newIndex);
-      this.saveStoryBoard();
-      this.updateElementPositions();
+      this.handleDropDownOperations(storyboardId!, this.containers, newIndex);
     }
   }
   
@@ -360,10 +340,7 @@ export class BoardComponent implements OnInit{
       [newIndex]: { x: 50, y: 50, width: 80, height: 40 }
     };
 
-    // Get the storyboard id
     const storyboardId = this.route.snapshot.paramMap.get('id');
-
-    // this.handleStoryboardOperations(storyboardId!, this.containers);
   }
 
   async addHeaderField() {
@@ -386,7 +363,7 @@ export class BoardComponent implements OnInit{
     // Get the storyboard id
     const storyboardId = this.route.snapshot.paramMap.get('id');
   
-    this.handleStoryboardOperations(storyboardId!, this.containers);
+    // this.handleStoryboardOperations(storyboardId!, this.containers);
   }
   
 // sidebar menu functions
@@ -415,15 +392,30 @@ export class BoardComponent implements OnInit{
       }
     } 
   }
-  
+  saveAndPublishStory() {
+    const storyboardId = this.route.snapshot.paramMap.get('id');
+    const modifiedUrl = this.router.url.replace('/edit/', '/view/');
+    this.router.navigateByUrl(modifiedUrl);
+  }
+
   // todo replace the repetitive code with this helper function
+  async handleDropDownOperations(storyboardId: string, containers: Container[], droppedElementIndex: string) {
+    if (storyboardId) {
+      const storyboard = await this.storyBoardService.getStoryboard(storyboardId);
+      storyboard!.id = storyboardId;
+      storyboard!.containers = containers;
+      await this.storyBoardService.saveStoryboards([storyboard!]);
+      this.updateSingleElementPosition(droppedElementIndex);
+    }
+  }
+
   async handleStoryboardOperations(storyboardId: string, containers: Container[]) {
     if (storyboardId) {
       const storyboard = await this.storyBoardService.getStoryboard(storyboardId);
       storyboard!.id = storyboardId;
       storyboard!.containers = containers;
       await this.storyBoardService.saveStoryboards([storyboard!]);
-      // this.updateElementPositions();
+      this.updateElementPositions();
     }
   }
 }

@@ -29,7 +29,7 @@ export class ViewStoryboardComponent {
     '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFFFFF', '#C0C0C0', '#808080', '#999999'
   ];
 
-
+// todo: set active container to be the first in ngoninit
   constructor(private storyBoardService: StoryBoardService,
     private route: ActivatedRoute) { }
 
