@@ -6,6 +6,7 @@ import { TextField } from "./text-field";
 export interface Container {
   id: string;
   active: boolean;
+  isLoaded?: boolean;
   images: { [key: string]: string };
   imagePositions: { [key: string]: ObjectPosition };
   textFields: { [key: string]: TextField };

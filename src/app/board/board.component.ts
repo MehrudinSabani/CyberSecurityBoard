@@ -1,9 +1,10 @@
 import { StoryBoardService } from '../services/storyboard-storage.service';
 import { ObjectPosition } from '../interfaces/object-position';
 import { Container } from '../interfaces/container';
-import { Component, ElementRef, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Storyboard } from '../interfaces/story-board';
+import { PositionService } from '../services/position.service';
 
 @Component({
   selector: 'app-board',
@@ -36,7 +37,10 @@ export class BoardComponent implements OnInit{
 
   dragging: boolean = false;
 
-  constructor(private storyBoardService: StoryBoardService, private route: ActivatedRoute) { }
+  constructor(private storyBoardService: StoryBoardService, 
+    private route: ActivatedRoute,
+    private positionService: PositionService,
+    private cd: ChangeDetectorRef) { }
 
   // onDragStart(event: DragEvent) {
   //   this.dragging = true;
@@ -127,11 +131,17 @@ export class BoardComponent implements OnInit{
   
 
   async activateContainer(container: Container) {
+    if (container.active) return;
     // Set active property to false for all containers
     this.containers.forEach((c) => c.active = false);
-    
+  
     // Set active property to true for the clicked container
     container.active = true;
+  
+    // Manually trigger change detection
+    this.cd.detectChanges();
+  
+    // Now call updateElementPositions
     this.updateElementPositions();
   }
   
@@ -150,7 +160,6 @@ export class BoardComponent implements OnInit{
       }
     }
   }
-  
 
   // todo
   async continueStoryPath() {
@@ -176,7 +185,7 @@ export class BoardComponent implements OnInit{
     storyboard!.containers = this.containers;
   
     this.updateElementPositions();
-    await this.storyBoardService.saveStoryboards([storyboard!]);
+    // await this.storyBoardService.saveStoryboards([storyboard!]);
   }
   
 
@@ -208,12 +217,6 @@ export class BoardComponent implements OnInit{
         ...activeContainer.pathDescription,
         [newIndex]: { text: '', class: 'dialogText' }
       };
-
-      // // Create a new object for textFieldPositions with the new key-value pair for the active container
-      // activeContainer.textFieldPositions = {
-      //   ...activeContainer.textFieldPositions,
-      //   [newIndex]: { x: 1000, y: 100 + i * 100, width: 150, height: 40 } // Adjust the y position for each text field
-      // };
   
       // Create a new object for radioButtons with the new key-value pair for the active container
       activeContainer.radioButtons = {
@@ -229,9 +232,8 @@ export class BoardComponent implements OnInit{
     storyboard!.containers = this.containers;
 
     this.updateElementPositions();
-    await this.storyBoardService.saveStoryboards([storyboard!]);
+    // await this.storyBoardService.saveStoryboards([storyboard!]);
   }
-  
   
   splitStoryPathPrompt() {
     const userInput = prompt('Enter the number of paths to split');
@@ -249,10 +251,10 @@ export class BoardComponent implements OnInit{
     if (!activeContainer) return;
     const containerElement = document.getElementById(activeContainer.id);
     if (!containerElement) return;
-
+  
     const x = event.offsetX;
     const y = event.offsetY;
-
+  
     const newIndex = Object.keys(activeContainer.images).length.toString();
     activeContainer.images[newIndex] = url;
     // Set the dimensions to the stored values
@@ -261,7 +263,7 @@ export class BoardComponent implements OnInit{
       width: 100,
       height: 100,
     };
-
+  
     if (
       Object.keys(activeContainer.images).some((key) => activeContainer.images[key] === undefined) ||
       Object.keys(activeContainer.imagePositions).some((key) => activeContainer.imagePositions[key] === undefined)
@@ -270,50 +272,74 @@ export class BoardComponent implements OnInit{
     } else {
       // Get the storyboard id
       const storyboardId = this.route.snapshot.paramMap.get('id');
-
+  
       this.handleStoryboardOperations(storyboardId!, this.containers);
-
+  
+      // Call updateSingleElementPosition with the index of the dropped element
+      // this.updateSingleElementPosition(newIndex);
+      this.saveStoryBoard();
+      this.updateElementPositions();
     }
   }
+  
+  updateSingleElementPosition(droppedElementIndex: string) {
+    const activeContainer = this.containers.find(container => container.active);
+    if (!activeContainer) return;
+  
+    // Compute the ID of the dropped element
+    const droppedElementId = `image${this.containers.indexOf(activeContainer)}_${droppedElementIndex}`;
+  
+    // Find the corresponding position
+    const pos = activeContainer.imagePositions[droppedElementIndex];
+    if (!pos) return;
+  
+    // Find the imageElement and update its position
+    const imageElement = document.getElementById(droppedElementId);
+    if (imageElement) {
+      imageElement.style.left = `${pos.x}px`;
+      imageElement.style.top = `${pos.y-130}px`;
+      imageElement.style.width = `${pos.width}px`;
+      imageElement.style.height = `${pos.height}px`;
+    }
+  }
+  
 
-  updateImagePositions() {
+  updateElementPositions() {
     this.containers.forEach((container, containerIndex) => {
       if (!container.active) return;
-
+  
+      const positions: { [elementId: string]: ObjectPosition } = {};
+  
       Object.entries(container.imagePositions).forEach(([index, position]) => {
         const imageElement = document.getElementById(`image${containerIndex}_${index}`);
         if (!imageElement || typeof position !== 'object' || position === null) return;
-
+  
         const pos = position as ObjectPosition;
         imageElement.style.left = `${pos.x}px`;
-        imageElement.style.top = `${pos.y}px`;
+        imageElement.style.top = `${pos.y-130}px`;
         imageElement.style.width = `${pos.width}px`;
         imageElement.style.height = `${pos.height}px`;
+  
+        positions[`image${containerIndex}_${index}`] = pos;
       });
-    });
-  }
-
-  updateTextFieldPositions() {
-    this.containers.forEach((container, containerIndex) => {
-      if (!container.active) return;
-
+  
       Object.entries(container.textFieldPositions).forEach(([index, position]) => {
         const textFieldElement = document.getElementById(`textField${containerIndex}_${index}`);
         if (!textFieldElement || typeof position !== 'object' || position === null) return;
-
+  
         const pos = position as ObjectPosition;
         textFieldElement.style.left = `${pos.x}px`;
-        textFieldElement.style.top = `${pos.y}px`;
+        textFieldElement.style.top = `${pos.y-130}px`;
         textFieldElement.style.width = `${pos.width}px`;
         textFieldElement.style.height = `${pos.height}px`;
-      });
-    })
+  
+        positions[`image${containerIndex}_${index}`] = pos;
+      });  
+      // this.positionService.savePositions(container.id, positions);
+    });
   }
-  updateElementPositions() {
+  
 
-    this.updateImagePositions();
-    this.updateTextFieldPositions();
-  }
 
   // adding text
   async addTextField() {
@@ -337,7 +363,7 @@ export class BoardComponent implements OnInit{
     // Get the storyboard id
     const storyboardId = this.route.snapshot.paramMap.get('id');
 
-    this.handleStoryboardOperations(storyboardId!, this.containers);
+    // this.handleStoryboardOperations(storyboardId!, this.containers);
   }
 
   async addHeaderField() {
@@ -363,8 +389,6 @@ export class BoardComponent implements OnInit{
     this.handleStoryboardOperations(storyboardId!, this.containers);
   }
   
-
-
 // sidebar menu functions
   onDragOver(event: DragEvent) {
     event.preventDefault();
@@ -389,7 +413,7 @@ export class BoardComponent implements OnInit{
           height: imagePosition.height
         };
       }
-    }
+    } 
   }
   
   // todo replace the repetitive code with this helper function
@@ -399,7 +423,7 @@ export class BoardComponent implements OnInit{
       storyboard!.id = storyboardId;
       storyboard!.containers = containers;
       await this.storyBoardService.saveStoryboards([storyboard!]);
-      this.updateElementPositions();
+      // this.updateElementPositions();
     }
   }
 }
