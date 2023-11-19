@@ -11,19 +11,16 @@ import { TextField } from '../interfaces/text-field';
 export class StoryBoardService {
   constructor(private firestore: Firestore, private authService: AuthenticationService) { }
 
-  // new
   async saveStoryboards(storyboards: Storyboard[]) {
     const storyboardsForFirestore = storyboards.map((storyboard) => {
         const containersForFirestore = storyboard.containers.map((container) => {
-            const imagesArray = Object.entries(container.images || {}).map(([key, value]) => ({ key, value }));
-            const imagePositionsArray = Object.entries(container.imagePositions || {}).map(([key, value]) => ({ key, value }));
+          const imagesArray = Object.entries(container.images).map(([key, value]) => ({ key, value }));
+          const imagePositionsArray = Object.entries(container.imagePositions).map(([key, value]) => ({ key, value }));
+          const textFieldsArray = Object.entries(container.textFields).map(([key, value]) => ({ key, value }));
+          const textFieldPositionsArray = Object.entries(container.textFieldPositions).map(([key, value]) => ({ key, value }));
+          const radioButtonArray = Object.entries(container.radioButtons).map(([key,value]) => ({key, value}));
+  
             
-            // Check if text and class are not undefined and provide a default value
-            const textFieldsArray = Object.entries(container.textFields || {}).map(([key, value]) => ({ key, value: { text: value.text || '', class: value.class || 'default-class' } }));
-            
-            const textFieldPositionsArray = Object.entries(container.textFieldPositions || {}).map(([key, value]) => ({ key, value }));
-            const radioButtonArray = Object.entries(container.radioButtons || {} ).map(([key,value]) => ({key, value}));
-
             return {
                 ...container,
                 images: imagesArray,
@@ -73,8 +70,8 @@ export class StoryBoardService {
         const imagesArray = Object.entries(containerData.images).map(([key, value]) => ({ key, value }));
         const imagePositionsArray = Object.entries(containerData.imagePositions).map(([key, value]) => ({ key, value }));
         
-        // Check if class is undefined and provide a default value
-        const textFieldsArray = Object.entries(containerData.textFields).map(([key, value]) => ({ key, value: { text: value.text, class: value.class || 'default-class' } }));
+        // Get text values from database
+        const textFieldsArray = Object.entries(containerData.textFields).map(([key, value]) => ({ key, value }));
         
         const textFieldPositionsArray = Object.entries(containerData.textFieldPositions).map(([key, value]) => ({ key, value }));
   
@@ -91,8 +88,8 @@ export class StoryBoardService {
           {}
         );
   
-        const textFields = textFieldsArray.reduce((acc: { [key: string]: TextField }, obj: any) => {
-          acc[obj.key] = obj.value;
+        const textFields = textFieldsArray.reduce((acc: { [key: string]: string }, obj: any) => {
+          acc[obj.key] = obj.value.value;
           return acc;
         }, {});
   
@@ -125,7 +122,8 @@ export class StoryBoardService {
     } else {
       return null;
     }
-  }
+}
+
   
 
 

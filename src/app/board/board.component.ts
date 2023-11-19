@@ -195,7 +195,7 @@ for (let i = 0; i < n; i++) {
   // Create a new object for textFields with the new key-value pair for the active container
   activeContainer.pathDescription = {
     ...activeContainer.pathDescription,
-    [newPathId]: { text: '', class: 'dialogText' }
+    [newPathId]: { text: '' }
   };
 
   // Create a new object for radioButtons with the new key-value pair for the active container
@@ -323,7 +323,7 @@ for (let i = 0; i < n; i++) {
     // Create a new object for textFields with the new key-value pair
     activeContainer.textFields = {
       ...activeContainer.textFields,
-      [newIndex]: { text: '', class: 'default-class' } // Provide a default class name
+      [newIndex]: { text: ''} // Provide a default class name
     };
   
     // Create a new object for textFieldPositions with the new key-value pair
@@ -345,7 +345,7 @@ for (let i = 0; i < n; i++) {
   
     activeContainer.textFields = {
       ...activeContainer.textFields,
-      [newIndex]: { text: '', class: 'headingText' } // 'headingText' is being used here
+      [newIndex]: { text: '', class: 'headingClass' } // 'headingText' is being used here
     };
   
     // Create a new object for textFieldPositions with the new key-value pair
@@ -358,7 +358,7 @@ for (let i = 0; i < n; i++) {
     const storyboardId = this.route.snapshot.paramMap.get('id');
     
     this.handleStoryboardOperations(storyboardId!, this.containers);
-  }
+}
 
 // sidebar menu functions
   onDragOver(event: DragEvent) {

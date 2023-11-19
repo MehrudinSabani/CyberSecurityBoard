@@ -5,8 +5,7 @@
      style="position: absolute"
      cdkDrag cdkDragBoundary=".container">
      
-     <textarea [(ngModel)]="container.textFields[textField.key].text"
-     [ngClass]="container.textFields[textField.key].class"
+     <textarea [(ngModel)]="container.textFields[textField.key]"
      (mousedown)="startResize($event, j, true)"
      (mousemove)="resizeImage($event, j, true)"
      (mouseup)="endResize()"
