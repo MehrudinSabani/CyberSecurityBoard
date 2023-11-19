@@ -3,4 +3,5 @@ export interface ObjectPosition {
     y: number;
     width: number;
     height: number;
+    class?: string
   }

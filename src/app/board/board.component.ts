@@ -195,7 +195,7 @@ for (let i = 0; i < n; i++) {
   // Create a new object for textFields with the new key-value pair for the active container
   activeContainer.pathDescription = {
     ...activeContainer.pathDescription,
-    [newPathId]: { text: '' }
+    [newPathId]: { text: ''}
   };
 
   // Create a new object for radioButtons with the new key-value pair for the active container
@@ -317,49 +317,44 @@ for (let i = 0; i < n; i++) {
   async addTextField() {
     const activeContainer = this.containers.find((container) => container.active);
     if (!activeContainer) return;
-  
+
     const newIndex = Object.keys(activeContainer.textFields).length.toString();
-  
+
     // Create a new object for textFields with the new key-value pair
     activeContainer.textFields = {
       ...activeContainer.textFields,
-      [newIndex]: { text: ''} // Provide a default class name
+      [newIndex]: { text: '', class: '' }
     };
-  
+
     // Create a new object for textFieldPositions with the new key-value pair
     activeContainer.textFieldPositions = {
       ...activeContainer.textFieldPositions,
       [newIndex]: { x: 50, y: 50, width: 80, height: 40 }
     };
-  
-    const storyboardId = this.route.snapshot.paramMap.get('id');
-    this.handleStoryboardOperations(storyboardId!, this.containers);
 
   }
-  
+
   async addHeaderField() {
     const activeContainer = this.containers.find((container) => container.active);
     if (!activeContainer) return;
-  
     const newIndex = Object.keys(activeContainer.textFields).length.toString();
-  
-    activeContainer.textFields = {
-      ...activeContainer.textFields,
-      [newIndex]: { text: '', class: 'headingClass' } // 'headingText' is being used here
+
+    activeContainer.textFields[newIndex] = {
+     text: ''
     };
-  
+
     // Create a new object for textFieldPositions with the new key-value pair
     activeContainer.textFieldPositions = {
       ...activeContainer.textFieldPositions,
-      [newIndex]: { x: 50, y: 50, width: 80, height: 40 }
+      [newIndex]: { x: 50, y: 50, width: 80, height: 40, class: 'headerText' }
     };
   
     // Get the storyboard id
     const storyboardId = this.route.snapshot.paramMap.get('id');
-    
+  
     this.handleStoryboardOperations(storyboardId!, this.containers);
-}
-
+  }
+  
 // sidebar menu functions
   onDragOver(event: DragEvent) {
     event.preventDefault();
@@ -407,7 +402,6 @@ for (let i = 0; i < n; i++) {
     if (storyboardId) {
       const storyboard = await this.storyBoardService.getStoryboard(storyboardId);
       storyboard!.id = storyboardId;
-      console.log(containers);
       storyboard!.containers = containers;
       await this.storyBoardService.saveStoryboards([storyboard!]);
       this.updateElementPositions();

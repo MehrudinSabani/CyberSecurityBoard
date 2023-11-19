@@ -14,7 +14,8 @@
     [style.height]="container.textFieldPositions[textField.key].height + 'px'"
     [style.left]="container.textFieldPositions[textField.key].x + 'px'"
     [style.top]="container.textFieldPositions[textField.key].y + 'px'" style="position: absolute">
-    <textarea [(ngModel)]="container.textFields[textField.key]"></textarea>
+    <textarea [(ngModel)]="container.textFields[textField.key].text"
+      [ngClass]="container.textFieldPositions[textField.key].class"></textarea>
   </div>
 
 
