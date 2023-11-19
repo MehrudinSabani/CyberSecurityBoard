@@ -103,7 +103,8 @@ export class BoardComponent implements OnInit{
       imagePositions: {},
       textFields: {},
       textFieldPositions: {},
-      pathId: 'path'
+      pathId: 'path',
+      pathDescription: {}
       };
     this.containers.push(newContainer);
   
@@ -160,6 +161,7 @@ export class BoardComponent implements OnInit{
       textFields: {}, // Initialize textFields as an empty object for the new container
       textFieldPositions: {}, // Initialize textFieldPositions as an empty object for the new container
       radioButtons: {}, // Initialize radioButtons as an empty object for the new container
+      pathDescription: {},
       pathId: activeContainer.pathId, // Use the same pathId as the active container
     };
   
@@ -323,7 +325,7 @@ for (let i = 0; i < n; i++) {
     // Create a new object for textFields with the new key-value pair
     activeContainer.textFields = {
       ...activeContainer.textFields,
-      [newIndex]: { text: '', class: '' }
+      [newIndex]: { text: ''}
     };
 
     // Create a new object for textFieldPositions with the new key-value pair

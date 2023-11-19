@@ -18,9 +18,9 @@ export class StoryBoardService {
           const imagePositionsArray = Object.entries(container.imagePositions).map(([key, value]) => ({ key, value }));
           const textFieldsArray = Object.entries(container.textFields).map(([key, value]) => ({ key, value }));
           const textFieldPositionsArray = Object.entries(container.textFieldPositions).map(([key, value]) => ({ key, value }));
-          // const radioButtonArray = Object.entries(container.radioButtons).map(([key,value]) => ({key, value}));
-  
-            
+          // const radioButtonArray = Object.entries(container.radioButtons).map(([key,value]) => ({key, value}));  
+          const pathDescriptionArray = Object.entries(container.pathDescription).map(([key, value]) => ({ key, value }));
+   
             return {
                 ...container,
                 images: imagesArray,
@@ -28,6 +28,8 @@ export class StoryBoardService {
                 textFields: textFieldsArray,
                 textFieldPositions: textFieldPositionsArray,
                 // radioButton: radioButtonArray
+                pathDescription: pathDescriptionArray
+
             };
         });
 
@@ -72,9 +74,10 @@ export class StoryBoardService {
         
         // Get text values from database
         const textFieldsArray = Object.entries(containerData.textFields).map(([key, value]) => ({ key, value }));
-        
         const textFieldPositionsArray = Object.entries(containerData.textFieldPositions).map(([key, value]) => ({ key, value }));
   
+        const pathDescriptionArray = Object.entries(containerData.pathDescription).map(([key, value]) => ({ key, value }));
+
         const images = imagesArray.reduce((acc: { [key: string]: string }, obj: any) => {
           acc[obj.key] = obj.value.value;
           return acc;
@@ -100,7 +103,11 @@ export class StoryBoardService {
           },
           {}
         );
-  
+
+        const pathDescription = pathDescriptionArray.reduce((acc: { [key: string]: string }, obj: any) => {
+          acc[obj.key] = obj.value.value;
+          return acc;
+        }, {});
         const radioButtons = containerData.radioButtons || {}; // Check if radioButtons property exists, otherwise fallback to an empty object
   
         return {
@@ -111,7 +118,9 @@ export class StoryBoardService {
           imagePositions,
           textFields,
           textFieldPositions,
-          radioButtons
+          radioButtons,
+          pathDescription
+          
         };
       });
   

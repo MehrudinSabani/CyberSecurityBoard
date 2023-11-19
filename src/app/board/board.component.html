@@ -53,11 +53,13 @@
           <div *ngIf="container.radioButtons" class="pathChoice">
             <div *ngFor="let key of getKeys(container.radioButtons); let i = index" class="choiceContainer">
 
-              <input type="radio" [(ngModel)]="container.radioButtons[key]" name="{{'radio' + i}}"
+              <!-- <input type="radio" [(ngModel)]="container.radioButtons[key]" name="{{'radio' + i}}" -->
+              <input type="radio" name="{{'radio' + i}}"
+
                 (click)="getRadioButtonValue(key)">{{ key }}
 
-              <textarea [(ngModel)]="container.pathDescription"></textarea>
-            </div>
+                <textarea  [(ngModel)]="container.pathDescription[i].text"></textarea>
+              </div>
           </div>
         </div>
       </div>
