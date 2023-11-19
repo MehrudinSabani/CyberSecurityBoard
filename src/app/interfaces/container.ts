@@ -14,5 +14,4 @@ export interface Container {
   pathId: string;
   pathDescription?: { [key: string]: TextField };
   radioButtons?: any;
-
 }

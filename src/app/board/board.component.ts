@@ -66,11 +66,6 @@ export class BoardComponent implements OnInit{
     this.handleStoryboardOperations(this.storyId, this.containers);
   }
 
-  // todo
-  async saveStoryBoard(){
-  }
-  
-
   getFlattenedContainers() {
     let groupedContainers = this.groupContainers();
     
@@ -193,23 +188,23 @@ export class BoardComponent implements OnInit{
     }));
   
     // Generate n text fields and radio buttons for the active container
-    for (let i = 0; i < n; i++) {
-      const newIndex = Object.keys(activeContainer.textFields).length.toString();
+// Generate n text fields and radio buttons for the active container
+for (let i = 0; i < n; i++) {
+  const newPathId = String.fromCharCode(97 + i);
   
-      // Create a new object for textFields with the new key-value pair for the active container
-// Create a new object for textFields with the new key-value pair for the active container
-      activeContainer.pathDescription = {
-        ...activeContainer.pathDescription,
-        [newIndex]: { text: '', class: 'dialogText' }
-      };
-  
-      // Create a new object for radioButtons with the new key-value pair for the active container
-      activeContainer.radioButtons = {
-        ...activeContainer.radioButtons,
-        [String.fromCharCode(97 + i)]: false
-      };
-    }
-  
+  // Create a new object for textFields with the new key-value pair for the active container
+  activeContainer.pathDescription = {
+    ...activeContainer.pathDescription,
+    [newPathId]: { text: '', class: 'dialogText' }
+  };
+
+  // Create a new object for radioButtons with the new key-value pair for the active container
+  activeContainer.radioButtons = {
+    ...activeContainer.radioButtons,
+    [newPathId]: false
+  };
+}
+
     // Insert new containers at the correct index
     this.containers.splice(activeIndex + 1, 0, ...newContainers);
     const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
@@ -318,31 +313,30 @@ export class BoardComponent implements OnInit{
       // this.positionService.savePositions(container.id, positions);
     });
   }
-  
-
-
   // adding text
   async addTextField() {
     const activeContainer = this.containers.find((container) => container.active);
     if (!activeContainer) return;
-
+  
     const newIndex = Object.keys(activeContainer.textFields).length.toString();
-
+  
     // Create a new object for textFields with the new key-value pair
     activeContainer.textFields = {
       ...activeContainer.textFields,
-      [newIndex]: { text: '', class: '' }
+      [newIndex]: { text: '', class: 'default-class' } // Provide a default class name
     };
-
+  
     // Create a new object for textFieldPositions with the new key-value pair
     activeContainer.textFieldPositions = {
       ...activeContainer.textFieldPositions,
       [newIndex]: { x: 50, y: 50, width: 80, height: 40 }
     };
-
+  
     const storyboardId = this.route.snapshot.paramMap.get('id');
-  }
+    this.handleStoryboardOperations(storyboardId!, this.containers);
 
+  }
+  
   async addHeaderField() {
     const activeContainer = this.containers.find((container) => container.active);
     if (!activeContainer) return;
@@ -351,9 +345,9 @@ export class BoardComponent implements OnInit{
   
     activeContainer.textFields = {
       ...activeContainer.textFields,
-      [newIndex]: { text: '', class: 'headingText' }  // include the class here
+      [newIndex]: { text: '', class: 'headingText' } // 'headingText' is being used here
     };
-
+  
     // Create a new object for textFieldPositions with the new key-value pair
     activeContainer.textFieldPositions = {
       ...activeContainer.textFieldPositions,
@@ -362,10 +356,10 @@ export class BoardComponent implements OnInit{
   
     // Get the storyboard id
     const storyboardId = this.route.snapshot.paramMap.get('id');
-  
-    // this.handleStoryboardOperations(storyboardId!, this.containers);
+    
+    this.handleStoryboardOperations(storyboardId!, this.containers);
   }
-  
+
 // sidebar menu functions
   onDragOver(event: DragEvent) {
     event.preventDefault();
@@ -413,9 +407,15 @@ export class BoardComponent implements OnInit{
     if (storyboardId) {
       const storyboard = await this.storyBoardService.getStoryboard(storyboardId);
       storyboard!.id = storyboardId;
+      console.log(containers);
       storyboard!.containers = containers;
       await this.storyBoardService.saveStoryboards([storyboard!]);
       this.updateElementPositions();
     }
   }
+
+  trackByFn(index: number, container: Container) {
+    return container.id; // Use the 'id' property as the unique identifier
+  }
+  
 }

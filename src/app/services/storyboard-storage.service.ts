@@ -12,47 +12,52 @@ export class StoryBoardService {
   constructor(private firestore: Firestore, private authService: AuthenticationService) { }
 
   // new
-
   async saveStoryboards(storyboards: Storyboard[]) {
-    // Convert images, imagePositions, textFields, and textFieldPositions objects to arrays of objects with keys
     const storyboardsForFirestore = storyboards.map((storyboard) => {
-      const containersForFirestore = storyboard.containers.map((container) => {
-        const imagesArray = Object.entries(container.images || {}).map(([key, value]) => ({ key, value }));
-        const imagePositionsArray = Object.entries(container.imagePositions || {}).map(([key, value]) => ({ key, value }));
-        const textFieldPositionsArray = Object.entries(container.textFieldPositions || {}).map(([key, value]) => ({ key, value }));
-        const radioButtonArray = Object.entries(container.radioButtons || {} ).map(([key,value]) => ({key, value}));
-  
+        const containersForFirestore = storyboard.containers.map((container) => {
+            const imagesArray = Object.entries(container.images || {}).map(([key, value]) => ({ key, value }));
+            const imagePositionsArray = Object.entries(container.imagePositions || {}).map(([key, value]) => ({ key, value }));
+            
+            // Check if text and class are not undefined and provide a default value
+            const textFieldsArray = Object.entries(container.textFields || {}).map(([key, value]) => ({ key, value: { text: value.text || '', class: value.class || 'default-class' } }));
+            
+            const textFieldPositionsArray = Object.entries(container.textFieldPositions || {}).map(([key, value]) => ({ key, value }));
+            const radioButtonArray = Object.entries(container.radioButtons || {} ).map(([key,value]) => ({key, value}));
+
+            return {
+                ...container,
+                images: imagesArray,
+                imagePositions: imagePositionsArray,
+                textFields: textFieldsArray,
+                textFieldPositions: textFieldPositionsArray,
+                radioButton: radioButtonArray
+            };
+        });
+
         return {
-          ...container,
-          images: imagesArray,
-          imagePositions: imagePositionsArray,
-          textFields: container.textFields,  // Save as an object
-          textFieldPositions: textFieldPositionsArray,
-          radioButton: radioButtonArray
+            ...storyboard,
+            containers: containersForFirestore
         };
-      });
-  
-      return {
-        ...storyboard,
-        containers: containersForFirestore
-      };
     });
 
     const storyboardsRef = collection(this.firestore, 'storyboards');
     const newStoryboards = [];
     for (const storyboard of storyboardsForFirestore) {
-      if (storyboard.id) {
-        const docRef = doc(storyboardsRef, storyboard.id);
-        await updateDoc(docRef, storyboard);
-        newStoryboards.push(storyboard);
-      } else {
-        const docRef = await addDoc(storyboardsRef, storyboard);
-        newStoryboards.push({ ...storyboard, id: docRef.id });
-      }
+        if (storyboard.id) {
+            const docRef = doc(storyboardsRef, storyboard.id);
+            await updateDoc(docRef, storyboard);
+            newStoryboards.push(storyboard);
+        } else {
+            const docRef = await addDoc(storyboardsRef, storyboard);
+            newStoryboards.push({ ...storyboard, id: docRef.id });
+        }
     }
 
     return newStoryboards;
-  }
+}
+
+
+
 
 
   // todo get storyboard by storyboard id
@@ -68,8 +73,8 @@ export class StoryBoardService {
         const imagesArray = Object.entries(containerData.images).map(([key, value]) => ({ key, value }));
         const imagePositionsArray = Object.entries(containerData.imagePositions).map(([key, value]) => ({ key, value }));
         
-        // Properly destructure the TextField object
-        const textFieldsArray = Object.entries(containerData.textFields).map(([key, value]) => ({ key, value: { text: value.text, class: value.class } }));
+        // Check if class is undefined and provide a default value
+        const textFieldsArray = Object.entries(containerData.textFields).map(([key, value]) => ({ key, value: { text: value.text, class: value.class || 'default-class' } }));
         
         const textFieldPositionsArray = Object.entries(containerData.textFieldPositions).map(([key, value]) => ({ key, value }));
   
@@ -86,9 +91,8 @@ export class StoryBoardService {
           {}
         );
   
-        // Build the textFields object correctly
         const textFields = textFieldsArray.reduce((acc: { [key: string]: TextField }, obj: any) => {
-          acc[obj.key] = { text: obj.value.text, class: obj.value.class };
+          acc[obj.key] = obj.value;
           return acc;
         }, {});
   
@@ -123,16 +127,6 @@ export class StoryBoardService {
     }
   }
   
-  
-
-  // todo
-// getPathLetter(activeContainer: Container): string {
-//   const selectedRadioButton = Object.entries(activeContainer.radioButtons).find(([key, value]) => value === true);
-//   if (selectedRadioButton) {
-//     return selectedRadioButton[0];
-//   }
-//   return '';
-// }
 
 
 getPathLetter(radioButtons: { [key: string]: boolean }): string {
