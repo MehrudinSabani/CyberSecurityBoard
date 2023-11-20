@@ -1,8 +1,8 @@
 import { StoryBoardService } from '../services/storyboard-storage.service';
 import { ObjectPosition } from '../interfaces/object-position';
 import { Container } from '../interfaces/container';
-import { ChangeDetectorRef, Component, ElementRef, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { ChangeDetectorRef, Component, ElementRef, OnChanges, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-board',
@@ -11,7 +11,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 
 })
 
-export class BoardComponent implements OnInit{
+export class BoardComponent implements OnInit {
 
   getKeys = Object.keys;
 
@@ -35,7 +35,7 @@ export class BoardComponent implements OnInit{
 
   dragging: boolean = false;
 
-  constructor(private storyBoardService: StoryBoardService, 
+  constructor(private storyBoardService: StoryBoardService,
     private router: Router,
     private route: ActivatedRoute,
     private cd: ChangeDetectorRef) { }
@@ -52,9 +52,6 @@ export class BoardComponent implements OnInit{
         this.storyboardName = storyboard.storyName;
         this.containers = storyboard.containers;
       } else {
-
-        // todo: additional measures for error handling
-        // instead Show error message or redirect to another page
         console.log("Storyboard could not be created")
       }
     }
@@ -68,19 +65,19 @@ export class BoardComponent implements OnInit{
 
   getFlattenedContainers() {
     let groupedContainers = this.groupContainers();
-    
+
     // flatten the grouped containers into a single array
     let flattenedContainers = ([] as Container[]).concat(...(Object.values(groupedContainers) as Container[][]));
-    
+
     // sort the containers by pathId
     flattenedContainers.sort((a, b) => a.pathId.localeCompare(b.pathId));
-    
+
     return flattenedContainers;
   }
-  
+
   groupContainers() {
     let groupedContainers: any = {};
-    
+
     this.containers.forEach(container => {
       let parentId = container.pathId.slice(0, -1);
       if (!groupedContainers[parentId]) {
@@ -88,7 +85,7 @@ export class BoardComponent implements OnInit{
       }
       groupedContainers[parentId].push(container);
     });
-  
+
     return groupedContainers;
   }
 
@@ -105,38 +102,39 @@ export class BoardComponent implements OnInit{
       textFieldPositions: {},
       pathId: 'path',
       pathDescription: {}
-      };
+    };
     this.containers.push(newContainer);
-  
+
     const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
     storyboard!.id = this.storyId!;
     storyboard!.containers = this.containers;
 
     const storyboardId = this.route.snapshot.paramMap.get('id');
 
-    this.handleStoryboardOperations(storyboardId!, this.containers);  }
-  
+    this.handleStoryboardOperations(storyboardId!, this.containers);
+  }
+
 
   async activateContainer(container: Container) {
     if (container.active) return;
     // Set active property to false for all containers
     this.containers.forEach((c) => c.active = false);
-  
+
     // Set active property to true for the clicked container
     container.active = true;
-  
+
     // Manually trigger change detection
     this.cd.detectChanges();
-  
+
     // Now call updateElementPositions
     this.updateElementPositions();
   }
-  
+
   getActiveContainer(): Container | undefined {
     return this.containers.find(container => container.active);
   }
-  
-  
+
+
   getRadioButtonValue(key: string) {
     const activeContainer = this.getActiveContainer();
     if (activeContainer) {
@@ -152,7 +150,7 @@ export class BoardComponent implements OnInit{
     const activeContainer = this.containers.find(container => container.active);
     if (!activeContainer) return;
     const activeIndex = this.containers.indexOf(activeContainer);
-  
+
     const newContainer: Container = {
       id: `container${this.containers.length}`,
       active: false,
@@ -164,14 +162,14 @@ export class BoardComponent implements OnInit{
       pathDescription: {},
       pathId: activeContainer.pathId, // Use the same pathId as the active container
     };
-  
+
     // Insert new container at the correct index
     this.containers.splice(activeIndex + 1, 0, newContainer);
     const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
     storyboard!.id = this.storyId!;
     storyboard!.containers = this.containers;
   }
-  
+
   async splitStoryPath(n: number) {
     const activeContainer = this.containers.find(container => container.active);
     if (!activeContainer) return;
@@ -185,38 +183,33 @@ export class BoardComponent implements OnInit{
       textFields: {}, // Initialize textFields as an empty object for each new container
       textFieldPositions: {}, // Initialize textFieldPositions as an empty object for each new container
       radioButtons: {}, // Initialize radioButtons as an empty object for each new container
-      pathDescription: {},
+      pathDescription: Array(n).fill({ text: '' }),
       pathId,
     }));
-  
+
     // Generate n text fields and radio buttons for the active container
-// Generate n text fields and radio buttons for the active container
-for (let i = 0; i < n; i++) {
-  const newPathId = String.fromCharCode(97 + i);
-  
-  // Create a new object for textFields with the new key-value pair for the active container
-  activeContainer.pathDescription = {
-    ...activeContainer.pathDescription,
-    [newPathId]: { text: ''}
-  };
+    for (let i = 0; i < n; i++) {
+      const newPathId = String.fromCharCode(97 + i);
 
-  // Create a new object for radioButtons with the new key-value pair for the active container
-  activeContainer.radioButtons = {
-    ...activeContainer.radioButtons,
-    [newPathId]: false
-  };
-}
+      // Ensure that activeContainer.pathDescription[i] is defined
+      activeContainer.pathDescription[i] = activeContainer.pathDescription[i] || { text: '' };
 
+      // Create a new object for radioButtons with the new key-value pair for the active container
+      activeContainer.radioButtons = {
+        ...activeContainer.radioButtons,
+        [newPathId]: false
+      };
+    }
     // Insert new containers at the correct index
     this.containers.splice(activeIndex + 1, 0, ...newContainers);
     const storyboard = await this.storyBoardService.getStoryboard(this.storyId!);
     storyboard!.id = this.storyId!;
     storyboard!.containers = this.containers;
 
-    this.updateElementPositions();
-    // await this.storyBoardService.saveStoryboards([storyboard!]);
+    const storyboardId = this.route.snapshot.paramMap.get('id');
+    this.handleStoryboardOperations(storyboardId!, this.containers);
   }
-  
+
   splitStoryPathPrompt() {
     const userInput = prompt('Enter the number of paths to split');
     const numberOfPaths = parseInt(userInput!, 10);
@@ -233,10 +226,10 @@ for (let i = 0; i < n; i++) {
     if (!activeContainer) return;
     const containerElement = document.getElementById(activeContainer.id);
     if (!containerElement) return;
-  
+
     const x = event.offsetX;
     const y = event.offsetY;
-  
+
     const newIndex = Object.keys(activeContainer.images).length.toString();
     activeContainer.images[newIndex] = url;
     // Set the dimensions to the stored values
@@ -245,7 +238,7 @@ for (let i = 0; i < n; i++) {
       width: 100,
       height: 100,
     };
-  
+
     if (
       Object.keys(activeContainer.images).some((key) => activeContainer.images[key] === undefined) ||
       Object.keys(activeContainer.imagePositions).some((key) => activeContainer.imagePositions[key] === undefined)
@@ -254,64 +247,64 @@ for (let i = 0; i < n; i++) {
     } else {
       // Get the storyboard id
       const storyboardId = this.route.snapshot.paramMap.get('id');
-  
+
       this.handleDropDownOperations(storyboardId!, this.containers, newIndex);
     }
   }
-  
+
   updateSingleElementPosition(droppedElementIndex: string) {
     const activeContainer = this.containers.find(container => container.active);
     if (!activeContainer) return;
-  
+
     // Compute the ID of the dropped element
     const droppedElementId = `image${this.containers.indexOf(activeContainer)}_${droppedElementIndex}`;
-  
+
     // Find the corresponding position
     const pos = activeContainer.imagePositions[droppedElementIndex];
     if (!pos) return;
-  
+
     // Find the imageElement and update its position
     const imageElement = document.getElementById(droppedElementId);
     if (imageElement) {
       imageElement.style.left = `${pos.x}px`;
-      imageElement.style.top = `${pos.y-130}px`;
+      imageElement.style.top = `${pos.y - 130}px`;
       imageElement.style.width = `${pos.width}px`;
       imageElement.style.height = `${pos.height}px`;
     }
   }
-  
+
 
   updateElementPositions() {
     this.containers.forEach((container, containerIndex) => {
       if (!container.active) return;
-  
+
       const positions: { [elementId: string]: ObjectPosition } = {};
-  
+
       Object.entries(container.imagePositions).forEach(([index, position]) => {
         const imageElement = document.getElementById(`image${containerIndex}_${index}`);
         if (!imageElement || typeof position !== 'object' || position === null) return;
-  
+
         const pos = position as ObjectPosition;
         imageElement.style.left = `${pos.x}px`;
-        imageElement.style.top = `${pos.y-130}px`;
+        imageElement.style.top = `${pos.y - 130}px`;
         imageElement.style.width = `${pos.width}px`;
         imageElement.style.height = `${pos.height}px`;
-  
+
         positions[`image${containerIndex}_${index}`] = pos;
       });
-  
+
       Object.entries(container.textFieldPositions).forEach(([index, position]) => {
         const textFieldElement = document.getElementById(`textField${containerIndex}_${index}`);
         if (!textFieldElement || typeof position !== 'object' || position === null) return;
-  
+
         const pos = position as ObjectPosition;
         textFieldElement.style.left = `${pos.x}px`;
-        textFieldElement.style.top = `${pos.y-130}px`;
+        textFieldElement.style.top = `${pos.y - 130}px`;
         textFieldElement.style.width = `${pos.width}px`;
         textFieldElement.style.height = `${pos.height}px`;
-  
+
         positions[`image${containerIndex}_${index}`] = pos;
-      });  
+      });
       // this.positionService.savePositions(container.id, positions);
     });
   }
@@ -325,7 +318,7 @@ for (let i = 0; i < n; i++) {
     // Create a new object for textFields with the new key-value pair
     activeContainer.textFields = {
       ...activeContainer.textFields,
-      [newIndex]: { text: ''}
+      [newIndex]: { text: '' }
     };
 
     // Create a new object for textFieldPositions with the new key-value pair
@@ -342,7 +335,7 @@ for (let i = 0; i < n; i++) {
     const newIndex = Object.keys(activeContainer.textFields).length.toString();
 
     activeContainer.textFields[newIndex] = {
-     text: ''
+      text: ''
     };
 
     // Create a new object for textFieldPositions with the new key-value pair
@@ -350,14 +343,14 @@ for (let i = 0; i < n; i++) {
       ...activeContainer.textFieldPositions,
       [newIndex]: { x: 50, y: 50, width: 80, height: 40, class: 'headerText' }
     };
-  
+
     // Get the storyboard id
     const storyboardId = this.route.snapshot.paramMap.get('id');
-  
+
     this.handleStoryboardOperations(storyboardId!, this.containers);
   }
-  
-// sidebar menu functions
+
+  // sidebar menu functions
   onDragOver(event: DragEvent) {
     event.preventDefault();
   }
@@ -381,7 +374,7 @@ for (let i = 0; i < n; i++) {
           height: imagePosition.height
         };
       }
-    } 
+    }
   }
   saveAndPublishStory() {
     const storyboardId = this.route.snapshot.paramMap.get('id');
@@ -413,5 +406,5 @@ for (let i = 0; i < n; i++) {
   trackByFn(index: number, container: Container) {
     return container.id; // Use the 'id' property as the unique identifier
   }
-  
+
 }
