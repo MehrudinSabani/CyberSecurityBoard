@@ -42,6 +42,8 @@ import { FilterByPathIdPipe } from './board/filter-by-path-id.pipe';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatTab, MatTabsModule} from '@angular/material/tabs';
 import { MatMenuModule } from '@angular/material/menu';
+import {MatCardModule} from '@angular/material/card';
+
 
 
 
@@ -81,6 +83,7 @@ import { MatMenuModule } from '@angular/material/menu';
     MatFormFieldModule,
     MatTabsModule,
     MatMenuModule,
+    MatCardModule,
 
 
     // angular firebase integration

@@ -25,8 +25,15 @@ export class ViewStoryboardComponent {
   pathIdColors: Map<string, string> = new Map();
 
   predefinedColors: string[] = [
-    '#FF5733', '#33FF57', '#3357FF', '#800000', '#008000', '#000080', '#808000', '#008080', '#800080', '#000000',
-    '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFFFFF', '#C0C0C0', '#808080', '#999999'
+    '#FFB0B0', // Lighter Red
+    '#B0E0E0', // Lighter Cyan
+    '#B0E0B0', // Lighter Green
+    '#E0B0E0', // Lighter Magenta
+    '#B0B0E0', // Lighter Blue
+    '#E0E0B0', // Lighter Yellow
+    '#E0B08F', // Lighter Orange
+    '#90A4A4', // Lighter Teal
+    '#B090B0'  // Lighter Purple
   ];
 
 // todo: set active container to be the first in ngoninit
@@ -139,11 +146,7 @@ export class ViewStoryboardComponent {
     return groupedContainers;
   }
 
-  // random colors assigning
-  generateRandomColor(): string {
-    return '#' + Math.floor(Math.random()*16777215).toString(16);
-  }
-  
+
   getColorForPathId(pathId: string): string {
     // If it's the first path, don't color it
     if (pathId === 'path') {

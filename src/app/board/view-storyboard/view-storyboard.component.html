@@ -30,12 +30,13 @@
 
     <div class="storyboardnav">
         <div class="path-row" *ngFor="let container of getFlattenedContainers(); let i = index">
-          <button [style.margin-left.px]="container.pathId.length * 20"
-                  (click)="activateContainer(container)"
-                  [class.active-container]="container.active"
-                  [ngStyle]="{'background-color': getColorForPathId(container.pathId)}">
-            {{ container.pathId }}
-          </button>
+            <button [style.margin-left.px]="container.pathId.length * 20"
+            (click)="activateContainer(container)"
+            [class.active-container]="container.active"
+            [ngStyle]="{'background-color': container.active ? '#007bff' : getColorForPathId(container.pathId)}">
+      {{ container.pathId }}
+    </button>
+    
         </div>
       </div>
       

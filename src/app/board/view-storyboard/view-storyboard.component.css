@@ -9,12 +9,20 @@
 
 .storyboardNav {
     display: block;
-    position: absolute;
-    margin-top: 690px;
+    float: left;
+    margin-top: 100px;
+    width: 2250px;
+    overflow-x: auto;
+    margin-left: -1050px;
 }
 
-
-.storyboardNav button {}
+.storyboardnav .path-row button {
+    width: 100px;
+    height: 30px;
+    border-radius: 50%;
+    margin: 6px;
+  }
+  
 
 .storyboardNav button.active {
     background-color: #007bff;
@@ -22,6 +30,5 @@
 }
 
 .active-container {
-    background-color: blue;
-  }
-  
+    background-color: rgb(126, 154, 218);
+}
