@@ -1,31 +1,22 @@
-<div fxLayout="column" fxLayoutAlign="center center">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Sign Up</mat-card-title>
-    </mat-card-header>
+<div class="container">
+  <div class="registration form">
+    <header>Signup</header>
     <form [formGroup]="signupForm" (ngSubmit)="signup()">
-      <mat-form-field appearance="outline">
-        <mat-label>Full Name</mat-label>
-        <input autocomplete="off" formControlName="displayName" type="text" matInput placeholder="Display Name">
-      </mat-form-field>
+      <label>User Name</label>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Email</mat-label>
-        <input formControlName="email" type="email" matInput placeholder="Email">
-      </mat-form-field>
+      <input type="text" formControlName="displayName" placeholder="User Name">
+      <label>Email</label>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Password</mat-label>
-        <input autocomplete="off" formControlName="password" type="password" matInput placeholder="Password">
-      </mat-form-field>
+      <input type="text" formControlName="email" placeholder="Email">
+      <label>Password</label>
 
-      <div *ngIf="firebaseErrorMessage != ''" class="error-style">
-        <span>{{ firebaseErrorMessage }}</span>
-      </div>
-
-      <button mat-raised-button color="primary" type="submit">Sign up</button>
+      <input autocomplete="off" formControlName="password" type="password" matInput placeholder="Password">
+      <input type="submit" class="button" value="Sign Up">
     </form>
-  </mat-card>
+    <div class="signup">
+      <span class="signup">Already have an account?
+        <label for="check" routerLink="/login">Login</label>
+      </span>
+    </div>
+  </div>
 </div>
-
-

@@ -8,5 +8,9 @@
 
     <button [routerLink]="'/storyboard/edit/' + story.id">Edit</button>
     <button [routerLink]="'/storyboard/view/' + story.id">View</button>
+    <button mat-button color="warn" (click)="deleteStoryboard(story.id!)">
+        <mat-icon>delete</mat-icon> 
+        <p>Delete</p>
+      </button>
 
 </div>

@@ -1,9 +1,11 @@
-<button mat-raised-button color="primary" routerLink="">
+<!-- <button mat-raised-button color="primary" routerLink="">
     Home
-</button>
+</button> -->
 
-<div>
-    <form [formGroup]="loginForm" (ngSubmit)="loginUser()">
+<div class="container">
+    <div class="login form">
+        <header>Login</header>
+        <form [formGroup]="loginForm" (ngSubmit)="loginUser()">
             <div>
                 <label>Email</label>
                 <input autocomplete="on" formControlName="email" type="email" matInput placeholder="Email">
@@ -12,10 +14,16 @@
                 <label>Password</label>
                 <input autocomplete="on" formControlName="password" type="password" matInput placeholder="Password">
             </div>
-        <div *ngIf="firebaseErrorMessage != ''" class="error-style">
-            <span>{{ firebaseErrorMessage }}</span>
-        </div>
+            <div *ngIf="firebaseErrorMessage != ''" class="error-style">
+                <span>{{ firebaseErrorMessage }}</span>
+            </div>
 
-        <button >Login</button>
-    </form>
+            <input type="submit" class="button" value="Login">
+        </form>
+        <div class="signup">
+            <span class="signup">Don't have an account?
+                <label for="check" routerLink="/signup">Signup</label>
+            </span>
+        </div>
+    </div>
 </div>

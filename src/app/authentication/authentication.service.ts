@@ -29,15 +29,15 @@ export class AuthenticationService {
       .then(() => {
         console.log('Auth Service: loginUser: success');
         this.router.navigate(['']);
+        return { isValid: true, message: 'Login successful' }; // Return a result when the login is successful
       })
       .catch(error => {
         console.log('Auth Service: login error...');
         console.log('error code', error.code);
-        console.log('error', error);
-        // if (error.code)
-        //     return { isValid: false, message: error.message };
+        return { isValid: false, message: error.message }; // Return a result when the login fails
       });
-  }
+   }
+   
 
   signupUser(user: any, username: string): Promise<any> {
     return this.afAuth.createUserWithEmailAndPassword(user.email, user.password)
@@ -54,7 +54,7 @@ export class AuthenticationService {
       .catch(error => {
         console.log('Auth Service: signup error', error);
         // if (error.code)
-        //     return { isValid: false, message: error.message };
+        return { isValid: false, message: error.message }; // Return a result when the login fails
       });
   }
 

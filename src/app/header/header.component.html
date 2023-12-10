@@ -2,7 +2,7 @@
     <mat-sidenav mode="side" opened (click)="toggleSidebar()">
 
 
-        <div *ngIf="(afAuth.user | async)">
+        <div *ngIf="(afAuth.user | async) as user">
 
             <div mat-menu-item class="menu-item">
                 <mat-icon>person</mat-icon>&nbsp;
@@ -15,6 +15,11 @@
             </div>
 
             <div mat-menu-item class="menu-item">
+                <mat-icon>slideshow</mat-icon>&nbsp;
+                <span [hidden]="collapse" routerLink="/guide">Guide</span>
+            </div>
+
+            <div mat-menu-item class="menu-item">
                 <mat-icon>exit_to_app</mat-icon>&nbsp;
                 <span [hidden]="collapse" (click)="logout()">Logout</span>
             </div>
@@ -22,7 +27,7 @@
 
 
 
-        <div *ngIf="!(afAuth.user | async)">
+        <div *ngIf="!(afAuth.user | async) as user">
 
             <div mat-menu-item class="menu-item">
                 <mat-icon>create</mat-icon>&nbsp;

@@ -44,6 +44,9 @@ import {MatTab, MatTabsModule} from '@angular/material/tabs';
 import { MatMenuModule } from '@angular/material/menu';
 import {MatCardModule} from '@angular/material/card';
 
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { GuidePageComponent } from './guide-page/guide-page.component';
+import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
 
 
 
@@ -65,7 +68,9 @@ import {MatCardModule} from '@angular/material/card';
     ViewStoryboardComponent,
     EditStoryboardComponent,
     FullScreenComponent,
-    FilterByPathIdPipe
+    FilterByPathIdPipe,
+    GuidePageComponent,
+    ErrorDialogComponent
     ],
   imports: [
     BrowserModule,
@@ -84,7 +89,7 @@ import {MatCardModule} from '@angular/material/card';
     MatTabsModule,
     MatMenuModule,
     MatCardModule,
-
+    MatSnackBarModule,
 
     // angular firebase integration
     AngularFireModule.initializeApp(environment.firebase),

@@ -9,6 +9,7 @@ import { SignupComponent } from './header/signup/signup.component';
 import { UserDashboardComponent } from './user-dashboard/user-dashboard.component';
 import { AuthGuard } from './authentication/auth.guard';
 import { ViewStoryboardComponent } from './board/view-storyboard/view-storyboard.component';
+import { GuidePageComponent } from './guide-page/guide-page.component';
 
 
 const routes: Routes = [
@@ -16,6 +17,8 @@ const routes: Routes = [
   { path: 'storyboard', component: BoardComponent},
   { path: 'login', component: LoginComponent},
   { path: 'signup', component: SignupComponent},
+  { path: 'guide', component: GuidePageComponent},
+
   { path: 'dashboard', component: UserDashboardComponent, canActivate : [AuthGuard]},
 
   { path: 'upload', component: UploadImageDetailsComponent}, 

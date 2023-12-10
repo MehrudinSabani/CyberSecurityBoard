@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Firestore, addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
+import { Firestore, addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
 import { Container } from '../interfaces/container';
 import { Storyboard } from '../interfaces/story-board';
 import { AuthenticationService } from '../authentication/authentication.service';
 import { TextField } from '../interfaces/text-field';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -197,5 +198,51 @@ getPathLetter(radioButtons: { [key: string]: boolean }): string {
     } else {
       return null;
     }
+  }
+
+
+  private storyboards: BehaviorSubject<Storyboard[]> = new BehaviorSubject<Storyboard[]>([]);
+
+  getStoryboards(): Observable<Storyboard[]> {
+    return this.storyboards.asObservable();
+  }
+  
+  deleteStoryboard(storyboardId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const storyboardRef = doc(this.firestore, 'storyboards', storyboardId);
+      deleteDoc(storyboardRef)
+        .then(() => {
+          console.log('Storyboard deleted');
+          const currentStoryboards = this.storyboards.getValue();
+          const updatedStoryboards = currentStoryboards.filter(storyboard => storyboard.id !== storyboardId);
+          this.storyboards.next(updatedStoryboards);
+          resolve();
+        })
+        .catch((error) => {
+          console.error('Error deleting storyboard', error);
+          reject(error);
+        });
+    });
+  }
+  
+  
+  deleteContainer(storyboardId: string, containerId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const containerRef = doc(this.firestore, 'storyboards', storyboardId, 'containers', containerId);
+      deleteDoc(containerRef)
+        .then(() => {
+          console.log('Container deleted');
+          resolve();
+        })
+        .catch((error) => {
+          console.error('Error deleting container', error);
+          reject(error);
+        });
+    });
+  }
+  
+// images and textfields seperate functions ?
+  deleteContainerElement(){
+
   }
 }

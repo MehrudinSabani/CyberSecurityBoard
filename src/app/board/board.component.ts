@@ -3,6 +3,7 @@ import { ObjectPosition } from '../interfaces/object-position';
 import { Container } from '../interfaces/container';
 import { ChangeDetectorRef, Component, ElementRef, OnChanges, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-board',
@@ -38,7 +39,8 @@ export class BoardComponent implements OnInit {
   constructor(private storyBoardService: StoryBoardService,
     private router: Router,
     private route: ActivatedRoute,
-    private cd: ChangeDetectorRef) { }
+    private cd: ChangeDetectorRef,
+    private _snackBar: MatSnackBar) { }
 
   async ngOnInit() {
 
@@ -343,11 +345,7 @@ export class BoardComponent implements OnInit {
       ...activeContainer.textFieldPositions,
       [newIndex]: { x: 50, y: 50, width: 80, height: 40, class: 'headerText' }
     };
-
-    // Get the storyboard id
-    const storyboardId = this.route.snapshot.paramMap.get('id');
-
-    this.handleStoryboardOperations(storyboardId!, this.containers);
+    
   }
 
   // sidebar menu functions
@@ -377,7 +375,10 @@ export class BoardComponent implements OnInit {
     }
   }
   saveAndPublishStory() {
+
     const storyboardId = this.route.snapshot.paramMap.get('id');
+    this.handleStoryboardOperations(storyboardId!, this.containers);
+
     const modifiedUrl = this.router.url.replace('/edit/', '/view/');
     this.router.navigateByUrl(modifiedUrl);
   }
@@ -407,4 +408,41 @@ export class BoardComponent implements OnInit {
     return container.id; // Use the 'id' property as the unique identifier
   }
 
+
+  deleteContainer(storyboardId: string, containerId: string) {
+    this.storyBoardService.deleteContainer(storyboardId, containerId)
+      .then(() => {
+        console.log('Container deleted');
+        this.openSnackBar('Container deleted successfully');
+
+      })
+      .catch((error) => {
+        console.error('Error deleting container', error);
+        this.openSnackBar('Failed to delete container'); // Show error message
+      });
+  }
+
+  deleteContainerAndRefresh(containerId: string) {
+    this.storyBoardService.deleteContainer(this.storyId, containerId)
+      .then(() => {
+        console.log('Container deleted');
+        this.openSnackBar('Container deleted successfully');
+
+      })
+      .catch((error) => {
+        console.error('Error deleting container', error);
+        this.openSnackBar('Failed to delete container'); 
+      });
+  }
+  
+
+  
+  openSnackBar(message: string) {
+    this._snackBar.open(message, 'Close', {
+      duration: 5000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+    });
+  }
+  
 }
