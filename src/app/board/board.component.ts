@@ -4,6 +4,7 @@ import { Container } from '../interfaces/container';
 import { ChangeDetectorRef, Component, ElementRef, OnChanges, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CdkDragEnd } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-board',
@@ -30,7 +31,8 @@ export class BoardComponent implements OnInit {
   draggedImagePosition: ObjectPosition;
 
   // image resizing
-  isResizing = false;
+  isResizing: boolean;
+
   startX = 0;
   startY = 0;
 

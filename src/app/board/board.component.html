@@ -39,10 +39,11 @@
         <div [id]="'innerContainer' + containerIndex" class="container" (dragover)="onDragOver($event)"
           (drop)="onDrop($event)">
 
-          <app-image [storyboardId]="storyId" [isResizing]="isResizing" [startX]="startX" [startY]="startY"
-            [draggedImagePosition]="draggedImagePosition" [containers]="containers" [container]="container"
-            [containerIndex]="containerIndex">
-          </app-image>
+          <app-image (resizeStart)="isResizing = true" (resizeEnd)="isResizing = false"  [storyboardId]="storyId" [isResizing]="isResizing" [startX]="startX" [startY]="startY"
+          [draggedImagePosition]="draggedImagePosition" [containers]="containers" [container]="container"
+          [containerIndex]="containerIndex">
+        </app-image>
+        
 
           <app-text-field [storyboardId]="storyId" [isResizing]="isResizing" [startX]="startX" [startY]="startY"
             [draggedImagePosition]="draggedImagePosition" [containers]="containers" [container]="container"
