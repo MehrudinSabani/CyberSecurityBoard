@@ -12,6 +12,7 @@ import { UploadImageService } from '../services/upload-image.service';
 export class UploadImageDetailsComponent {
   imageForm: FormGroup;
   uploads: any[]; // an array that holds the uploaded image URLs and refs
+  characterChecked: boolean = false;
 
   constructor(   
      private storage: Storage,
@@ -21,9 +22,9 @@ export class UploadImageDetailsComponent {
   ngOnInit(): void {
     this.imageForm = new FormGroup({
       'imageName': new FormControl('', Validators.required),
-      'imageTag': new FormControl('', Validators.required)
-
-
+      'imageTag': new FormControl('', Validators.required),
+      'emotionTag': new FormControl('', Validators.required),
+      'positionTag': new FormControl('', Validators.required)
     })
   }
 
@@ -74,4 +75,9 @@ export class UploadImageDetailsComponent {
   }
 
   
+  checkCharacter(event: Event) {
+    const target = event.target as HTMLInputElement;
+    this.characterChecked = target.value === 'character';
+    
+  }
 }

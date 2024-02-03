@@ -1,29 +1,68 @@
-<form [formGroup]="imageForm" (ngSubmit)="uploadFiles(upload)">
-    <div class="row-cols-6">
-        <label>Image Name</label>
+<form [formGroup]="imageForm" (ngSubmit)="uploadFiles(upload)" class="form-container">
+    <div class="form-section">
+        <label class="label-head">Image Name</label>
         <input type="text" formControlName="imageName">
     </div>
 
-    <div class="row-cols-6">
-        <label>Image Tag</label>
-        <br>
-        <div class="form-check">            
-            <input type="radio" formControlName="imageTag" value="character">
+    <div class="form-section">
+        <label class="label-head">Image Tag</label>
+        <div class="form-check">
             <label>Character</label>
-            <input type="radio" formControlName="imageTag" value="symbol">
+            <input type="radio" formControlName="imageTag" value="character" (change)="checkCharacter($event)">
+
             <label>Symbol</label>
-            <input type="radio" formControlName="imageTag" value="speech-bubble">
+            <input type="radio" formControlName="imageTag" value="symbol" (change)="checkCharacter($event)">
+
             <label>Speech Bubble</label>
+            <input type="radio" formControlName="imageTag" value="speech-bubble" (change)="checkCharacter($event)">
+
         </div>
     </div>
 
-    <label class="col-1 col-form-label">Project Images</label>
+    <div class="characterOptions" *ngIf="characterChecked">
+        <div class="form-section">
+            <label class="label-head">Character Emotion</label>
+            <div class="form-check">
+                <label>😐 Neutral</label>
+                <input type="radio" formControlName="emotionTag" value="neutral">
+        
+                <label>😠 Angry</label>
+                <input type="radio" formControlName="emotionTag" value="angry">
+        
+                <label>😄 Happy</label>
+                <input type="radio" formControlName="emotionTag" value="happy">
+        
+                <label>😲 Surprised</label>
+                <input type="radio" formControlName="emotionTag" value="surprised">
+                
+                <label>😨 Scared</label>
+                <input type="radio" formControlName="emotionTag" value="scared">
+            </div>
+        </div>
 
-    <label for="fileUpload">Choose a File</label>
-    <input id="fileUpload" type="file" #upload />
+        <div class="form-section">
+            <label class="label-head">Character Position</label>
+            <div class="form-check">
+                <label>Sitting on a Chair</label>
+                <input type="radio" formControlName="positionTag" value="sitting-chair">
 
+                <label>Standing</label>
+                <input type="radio" formControlName="positionTag" value="standing">
 
-    <button>Save Project</button>
+                <label>Turned Back</label>
+                <input type="radio" formControlName="positionTag" value="turned-back">
 
+                <label>Sitting on a Desk</label>
+                <input type="radio" formControlName="positionTag" value="sitting-desk">
+            </div>
+        </div>
+    </div>
+    <div class="form-section">
+        <label class="label-head" for="fileUpload" >Choose an Image</label>
+        <input id="fileUpload" type="file" #upload />
+    </div>
 
+    <div class="form-section">
+        <button type="submit">Save Image</button>
+    </div>
 </form>

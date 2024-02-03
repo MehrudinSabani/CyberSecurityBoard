@@ -1,0 +1,32 @@
+.form-container {
+    display: flex;
+    flex-direction: column;
+    border: 1px dotted black;
+    padding: 10px;
+}
+
+.form-section {
+    display: flex;
+    flex-direction: column;
+    border: 1px dotted black;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.form-section label {
+    margin-bottom: 5px;
+    margin: 10px;
+
+}
+
+.form-check {
+    margin-top: 5px;
+}
+
+button {
+    margin-top: 10px;
+}
+
+.label-head{
+    font-weight: 900;
+}

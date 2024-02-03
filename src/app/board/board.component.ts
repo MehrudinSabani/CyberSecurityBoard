@@ -4,7 +4,8 @@ import { Container } from '../interfaces/container';
 import { ChangeDetectorRef, Component, ElementRef, OnChanges, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CdkDragEnd } from '@angular/cdk/drag-drop';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-board',
@@ -14,6 +15,8 @@ import { CdkDragEnd } from '@angular/cdk/drag-drop';
 })
 
 export class BoardComponent implements OnInit {
+
+  
 
   getKeys = Object.keys;
 
@@ -42,7 +45,9 @@ export class BoardComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private cd: ChangeDetectorRef,
-    private _snackBar: MatSnackBar) { }
+    private _snackBar: MatSnackBar,
+    private dialog: MatDialog) { }
+
 
   async ngOnInit() {
 
@@ -60,8 +65,15 @@ export class BoardComponent implements OnInit {
       }
     }
 
-    if (this.containers.length === 0) {
+    if (this.containers && this.containers.length > 0) {
+      // Activate the first container
+      const firstContainer = this.containers[0];
+      this.activateContainer(firstContainer);
+    } else {
+      // Create a new container with id 'container0' and set it to active in case there are no containers
+      const firstContainer = this.containers[0];
       this.addContainer();
+      this.activateContainer(firstContainer);
     }
 
     this.handleStoryboardOperations(this.storyId, this.containers);
@@ -411,34 +423,60 @@ export class BoardComponent implements OnInit {
   }
 
 
-  deleteContainer(storyboardId: string, containerId: string) {
-    this.storyBoardService.deleteContainer(storyboardId, containerId)
-      .then(() => {
-        console.log('Container deleted');
-        this.openSnackBar('Container deleted successfully');
-
-      })
-      .catch((error) => {
-        console.error('Error deleting container', error);
-        this.openSnackBar('Failed to delete container'); // Show error message
-      });
-  }
-
-  deleteContainerAndRefresh(containerId: string) {
-    this.storyBoardService.deleteContainer(this.storyId, containerId)
-      .then(() => {
-        console.log('Container deleted');
-        this.openSnackBar('Container deleted successfully');
-
-      })
-      .catch((error) => {
-        console.error('Error deleting container', error);
-        this.openSnackBar('Failed to delete container'); 
-      });
+  deleteContainerAndRefresh(containerId: string, pathId: string) {
+    // Check if the container has children
+    const hasChildren = this.containers.some(container =>
+      container.id !== containerId && container.pathId.startsWith(pathId) && container.pathId.length > pathId.length
+    );
+  
+    if (hasChildren) {
+      this.openSnackBar('Deletion is not allowed. The container has children.');
+      return;
+    }
+  
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '350px',
+      data: 'The container will be permanently deleted. Proceed?'
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // User confirmed the deletion
+        const containerIndex = this.containers.findIndex(container => 
+          container.id === containerId && container.pathId === pathId);
+  
+        this.storyBoardService.deleteContainer(this.storyId, containerId, pathId)
+          .then(() => {
+            console.log('Container deleted');
+            this.openSnackBar('Container deleted successfully');
+            // Update the local state
+            this.containers = this.containers.filter(container => !(container.id === containerId && container.pathId === pathId));
+  
+            // Determine the next active container
+            let nextActiveIndex = containerIndex;
+            if (containerIndex >= this.containers.length) {
+              nextActiveIndex = this.containers.length - 1; // Last container or -1 if no containers left
+            }
+  
+            // Activate the next container
+            if (nextActiveIndex >= 0 && this.containers[nextActiveIndex]) {
+              this.activateContainer(this.containers[nextActiveIndex]);
+            } else {
+              // Handle the case when there are no more containers
+              // You might want to navigate to a different page or show a message
+            }
+          })
+          .catch((error) => {
+            console.error('Error deleting container', error);
+            this.openSnackBar('Failed to delete container'); 
+          });
+      } else {
+        // User canceled the deletion
+      }
+    });
   }
   
 
-  
   openSnackBar(message: string) {
     this._snackBar.open(message, 'Close', {
       duration: 5000,

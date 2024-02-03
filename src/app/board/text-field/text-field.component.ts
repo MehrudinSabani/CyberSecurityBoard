@@ -1,5 +1,5 @@
 import { CdkDrag, CdkDragEnd } from '@angular/cdk/drag-drop';
-import { Component, Input } from '@angular/core';
+import { Component, HostListener, Input } from '@angular/core';
 import { Container } from 'src/app/interfaces/container';
 import { ObjectPosition } from 'src/app/interfaces/object-position';
 import { StoryBoardService } from 'src/app/services/storyboard-storage.service';
@@ -24,81 +24,63 @@ export class TextFieldComponent {
 
   @Input() storyboardId: string;
 
+  activeTextFieldIndex: number | null = null;
+
+  cdkDragDisabled: boolean = false;
+
   constructor(private storyBoardService: StoryBoardService) { }
 
 
-  startResize(event: MouseEvent, index: number, isTextField: boolean) {
-    const element = event.target as HTMLElement;
-    const elementRect = element.getBoundingClientRect();
+  @HostListener('wheel', ['$event'])
+  onWheel(event: WheelEvent) {
+    event.preventDefault();
+  
+    // If there's no active text field, do nothing
+    if (this.activeTextFieldIndex === null) return;
+  
+    const currentElementPosition = this.container.textFieldPositions[this.activeTextFieldIndex];
+  
+    // Use deltaY to determine the scroll direction
+    const delta = event.deltaY;
+  
+    if (delta < 0) {
+      // Increase size
+      currentElementPosition.width += 10;
+      currentElementPosition.height += 10;
+    } else {
+      // Decrease size
+      currentElementPosition.width = Math.max(10, currentElementPosition.width - 10);
+      currentElementPosition.height = Math.max(10, currentElementPosition.height - 10);
+    }
+  
+    // Update the style of the textarea
+    const element = document.getElementById(`textField${this.containerIndex}_${this.activeTextFieldIndex}`);
+    if (element) {
+      element.style.width = `${currentElementPosition.width}px`;
+      element.style.height = `${currentElementPosition.height}px`;
+    }
+  }
 
-    // Adjust the threshold values as needed
-    const threshold = 20;
-    const isWithinThreshold =
-      event.clientX > elementRect.right - threshold &&
-      event.clientY > elementRect.bottom - threshold;
-
-    if (isWithinThreshold) {
+  onResizeStart(event: MouseEvent) {
+    // Calculate if the mouse is near the bottom-right corner for resizing
+    // This is a simplified example, you'll need to adjust the logic here
+    const TEXTAREA_RESIZE_HANDLE_SIZE = 20; // Adjust this value based on your design
+    const textArea: HTMLTextAreaElement = event.target as HTMLTextAreaElement;
+    const { right, bottom } = textArea.getBoundingClientRect();
+    if (event.clientX >= right - TEXTAREA_RESIZE_HANDLE_SIZE &&
+        event.clientY >= bottom - TEXTAREA_RESIZE_HANDLE_SIZE) {
       this.isResizing = true;
-      this.startX = event.clientX;
-      this.startY = event.clientY;
-
-      const activeContainer = this.containers.find((container) => container.active);
-      if (activeContainer) {
-        // Copy the properties of the current ImagePosition to create a new instance
-        const currentElementPosition = isTextField
-          ? activeContainer.textFieldPositions[index]
-          : activeContainer.imagePositions[index];
-
-        this.draggedImagePosition = {
-          x: currentElementPosition.x,
-          y: currentElementPosition.y,
-          width: currentElementPosition.width,
-          height: currentElementPosition.height
-        };
-      }
+      // Disable dragging
+      this.cdkDragDisabled = true;
     }
   }
 
-
-  resizeImage(event: MouseEvent, index: number, isTextField: boolean) {
+  onResizeEnd() {
     if (this.isResizing) {
-      const activeContainer = this.containers.find((container) => container.active);
-      if (activeContainer) {
-        const currentElementPosition = isTextField
-          ? activeContainer.textFieldPositions[index]
-          : activeContainer.imagePositions[index];
-
-        // Calculate the new width and height based on the mouse's current position
-        const newWidth = this.draggedImagePosition.width + event.clientX - this.startX;
-        const newHeight = this.draggedImagePosition.height + event.clientY - this.startY;
-
-        // Update the width and height of the current ImagePosition
-        currentElementPosition.width = newWidth;
-        currentElementPosition.height = newHeight;
-
-        // Optionally, update the element's style for immediate visual feedback
-        const element = event.target as HTMLElement;
-        element.style.width = `${newWidth}px`;
-        element.style.height = `${newHeight}px`;
-      }
+      this.isResizing = false;
+      // Re-enable dragging
+      this.cdkDragDisabled = false;
     }
-  }
-
-
-  endResize() {
-    this.isResizing = false;
-  }
-
-  // text field specific methods
-
-  onTextDragStart(event: DragEvent, id: string) {
-    
-    event.dataTransfer?.setData('text/plain', id);
-    const rect = (event.target as HTMLElement).getBoundingClientRect();
-    const offsetX = event.clientX - rect.left;
-    const offsetY = event.clientY - rect.top;
-    event.dataTransfer?.setData('text/offset-x', offsetX.toString());
-    event.dataTransfer?.setData('text/offset-y', offsetY.toString());
   }
 
 

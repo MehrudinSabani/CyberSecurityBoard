@@ -34,8 +34,8 @@
             (click)="activateContainer(container)"
             [class.active-container]="container.active"
             [ngStyle]="{'background-color': container.active ? '#007bff' : getColorForPathId(container.pathId)}">
-      {{ container.pathId }}
-    </button>
+            {{ container.pathId | customPathPipe }}
+        </button>
     
         </div>
       </div>

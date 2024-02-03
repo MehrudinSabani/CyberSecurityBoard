@@ -1,17 +1,17 @@
-<div *ngFor="let textField of container.textFields | keyvalue; let j = index; trackBy: trackByFn"
+<div *ngFor="let textField of container.textFields | keyvalue; let i = index; trackBy: trackByFn"
      [id]="'textField' + containerIndex + '_' + textField.key"
-     cdkDrag
+     cdkDrag [cdkDragDisabled]="cdkDragDisabled"
      (cdkDragEnded)="onTextDragEnd($event, 'textField' + containerIndex + '_' + textField.key)"
      style="position: absolute"
-     cdkDrag cdkDragBoundary=".container">
-     
-     <textarea [(ngModel)]="container.textFields[textField.key].text"
-     [ngClass]="container.textFieldPositions[textField.key].class"
-     (mousedown)="startResize($event, j, true)"
-     (mousemove)="resizeImage($event, j, true)"
-     (mouseup)="endResize()"
-     style="width: 100%; height: 100%;"
-  ></textarea>
-  
-</div>
+     cdkDrag cdkDragBoundary=".container"
+     (mouseover)="activeTextFieldIndex = i">
 
+     <textarea [(ngModel)]="container.textFields[textField.key].text"
+               [ngClass]="container.textFieldPositions[textField.key].class"
+               [style.width]="container.textFieldPositions[i].width + 'px'"
+               [style.height]="container.textFieldPositions[i].height + 'px'"
+               class="resizable-textarea"
+               (mousedown)="onResizeStart($event)"
+               (mouseup)="onResizeEnd()"
+     ></textarea>
+</div>

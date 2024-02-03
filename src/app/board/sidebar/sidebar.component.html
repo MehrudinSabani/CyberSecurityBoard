@@ -35,11 +35,11 @@ tr>
 </div> -->
 
 
-<mat-tab-group class="navBar">
+<mat-tab-group class="navBar" (selectedIndexChange)="activeTabIndex = $event">
 
         <mat-tab  label="Characters" id="char1">
             <div class="imageHolder">
-                <img class="sidebarImage" *ngFor="let image of characterImages" [src]="image.imageLink"
+                <img class="sidebarImage" *ngFor="let image of filteredCharacterImages" [src]="image.imageLink"
                 (dragstart)="onDragStart($event, image.imageLink)">
             </div>
 
@@ -57,3 +57,68 @@ tr>
             </div>
         </mat-tab>
 </mat-tab-group>
+
+
+<div *ngIf="activeTabIndex === 0">
+<mat-accordion class="filter">
+    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Filters
+        </mat-panel-title>
+        <mat-panel-description>
+          Filtler Images by characteristics {{panelOpenState ? '+' : '-'}}
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+  
+      <form [formGroup]="filterForm">
+
+      <div class="filters">
+        <div class="filter-content">
+          <div class="form-check">
+            <label>
+              Emotion
+            </label>
+            <div class="form-check">
+              <label>😐 Neutral</label>
+              <input type="checkbox" (change)="onCheckboxChange($event, 'emotionTag', 'neutral')">
+  
+              <label>😠 Angry</label>
+              <input type="checkbox" (change)="onCheckboxChange($event, 'emotionTag', 'angry')">
+  
+              <label>😄 Happy</label>
+              <input type="checkbox" (change)="onCheckboxChange($event, 'emotionTag', 'happy')">
+  
+              <label>😲 Surprised</label>
+              <input type="checkbox" (change)="onCheckboxChange($event, 'emotionTag', 'surprised')">
+  
+              <label>😨 Scared</label>
+              <input type="checkbox" (change)="onCheckboxChange($event, 'emotionTag', 'scared')">
+            </div>
+  
+          </div>
+          <div class="form-check">
+            <label>
+              Position
+            </label>
+            <div class="form-check">
+              <label>Sitting - Chair</label>
+              <input type="checkbox" (change)="onCheckboxChange($event, 'positionTag', 'sitting-chair')">
+  
+              <label>Sitting - Desk</label>
+              <input type="checkbox" (change)="onCheckboxChange($event, 'positionTag', 'sitting-desk')">
+  
+              <label>Standing</label>
+              <input type="checkbox" (change)="onCheckboxChange($event, 'positionTag', 'standing')">
+  
+              <label>Turned Back</label>
+              <input type="checkbox" (change)="onCheckboxChange($event, 'positionTag', 'turned-back')">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </form>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>

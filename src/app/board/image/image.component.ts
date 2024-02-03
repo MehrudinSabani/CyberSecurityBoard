@@ -64,52 +64,6 @@ activeImageIndex: number | null = null;
   
   
 
-
-  // startResize(event: MouseEvent, index: number, isTextField: boolean) {
-  //   const element = event.target as HTMLElement;
-  //   const elementRect = element.getBoundingClientRect();
-  
-  //   // Adjust the threshold values as needed
-  //   const threshold = 20;
-  //   const isWithinThreshold =
-  //     event.clientX > elementRect.right - threshold &&
-  //     event.clientY > elementRect.bottom - threshold;
-  
-  //   if (isWithinThreshold && event.buttons === 1) {
-  //     this.isResizing = true;
-  //     this.startX = elementRect.right - event.clientX; // distance from the right edge of the image to the mouse cursor
-  //     this.startY = elementRect.bottom - event.clientY; // distance from the bottom edge of the image to the mouse cursor
-  //     this.draggedImagePosition = { ...this.container.imagePositions[index] };
-  //   }
-  // }
-  
-  // resizeImage(event: MouseEvent, index: number, isTextField: boolean) {
-  //   if (this.isResizing && event.buttons === 1) {
-  //     const currentElementPosition = isTextField
-  //       ? this.container.textFieldPositions[index]
-  //       : this.container.imagePositions[index];
-  
-  //     // Calculate the new right and bottom styles based on the mouse's current position
-  //     const newRight = this.startX - event.clientX;
-  //     const newBottom = this.startY - event.clientY;
-  
-  //     // Optionally, update the element's style for immediate visual feedback
-  //     const element = event.target as HTMLElement;
-  //     element.style.right = `${newRight}px`;
-  //     element.style.bottom = `${newBottom}px`;
-  //   }
-  // }
-  
-  
-
-  // endResize(event: MouseEvent) {
-  //   if (!event.buttons) {
-  //     this.isResizing = false;
-  //   }
-  //   this.resizeEnd.emit();
-
-  // }
-
   onDragEnded(event: CdkDragEnd, index: number) {
     const elementRect = event.source.element.nativeElement.getBoundingClientRect();
     const containerRect = event.source.element.nativeElement.parentElement!.getBoundingClientRect();

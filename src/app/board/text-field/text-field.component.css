@@ -6,3 +6,8 @@
     text-align: center;
     font-size: 28px;
 }
+
+.resizable-textarea {
+    resize: both;
+    overflow: auto;
+}

@@ -43,10 +43,13 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatTab, MatTabsModule} from '@angular/material/tabs';
 import { MatMenuModule } from '@angular/material/menu';
 import {MatCardModule} from '@angular/material/card';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { GuidePageComponent } from './guide-page/guide-page.component';
 import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
+import { CustomPathPipePipe } from './pipes/custom-path-pipe.pipe';
+import { ConfirmationDialogComponent } from './board/confirmation-dialog/confirmation-dialog.component';
 
 
 
@@ -70,7 +73,9 @@ import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
     FullScreenComponent,
     FilterByPathIdPipe,
     GuidePageComponent,
-    ErrorDialogComponent
+    ErrorDialogComponent,
+    CustomPathPipePipe,
+    ConfirmationDialogComponent
     ],
   imports: [
     BrowserModule,
@@ -90,6 +95,9 @@ import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
     MatMenuModule,
     MatCardModule,
     MatSnackBarModule,
+    MatExpansionModule,
+
+
 
     // angular firebase integration
     AngularFireModule.initializeApp(environment.firebase),

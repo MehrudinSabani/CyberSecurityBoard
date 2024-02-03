@@ -225,24 +225,37 @@ getPathLetter(radioButtons: { [key: string]: boolean }): string {
     });
   }
   
-  
-  deleteContainer(storyboardId: string, containerId: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const containerRef = doc(this.firestore, 'storyboards', storyboardId, 'containers', containerId);
-      deleteDoc(containerRef)
-        .then(() => {
-          console.log('Container deleted');
-          resolve();
-        })
-        .catch((error) => {
-          console.error('Error deleting container', error);
-          reject(error);
-        });
+  deleteContainer(storyboardId: string, containerId: string, pathId: string): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+        const storyboardRef = doc(this.firestore, 'storyboards', storyboardId);
+        try {
+            // Retrieve the current storyboard document
+            const docSnap = await getDoc(storyboardRef);
+            if (docSnap.exists()) {
+                const storyboardData = docSnap.data();
+                const updatedContainers = storyboardData['containers'].filter((container: any) => 
+                    container.id !== containerId || container.pathId !== pathId);
+
+                // Update the storyboard document with the filtered containers array
+                await updateDoc(storyboardRef, { containers: updatedContainers });
+                console.log('Container deleted');
+                resolve();
+            } else {
+                console.log("No such storyboard!");
+                reject("No such storyboard!");
+            }
+        } catch (error) {
+            console.error('Error deleting container', error);
+            reject(error);
+        }
     });
-  }
+}
+
   
 // images and textfields seperate functions ?
   deleteContainerElement(){
 
   }
+
+
 }

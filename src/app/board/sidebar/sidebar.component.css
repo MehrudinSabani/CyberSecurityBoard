@@ -1,4 +1,4 @@
-.sidebarImage{
+.sidebarImage {
     height: 120px;
     object-fit: cover;
     border-width: thin;
@@ -8,26 +8,29 @@
     margin: 2px;
 }
 
-.navBar{
+.navBar {
     margin: 0 auto;
 }
 
-img{
+img {
     background-color: white;
 }
 
-.imageHolder{
-    height: 120px; 
-    overflow-x: auto; 
-    position: relative; 
-    top: 0; 
+.imageHolder {
+    height: 120px;
+    overflow-x: auto;
+    position: relative;
+    top: 0;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 35px;
-
+    margin-bottom: 3px;
 }
+
 .sidebar {
     display: block;
-    width: 1300px; 
+    width: 1300px;
 
-  }
+}
+
+.filter {
+}
